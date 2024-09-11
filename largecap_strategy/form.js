@@ -62,17 +62,10 @@ const settings = {
 };
 
 const Form = (props) => {
-  console.log(props);
-  const [selectedClass, setSelectedClass] = useState("");
-  const [strategyName, setStrategyName] = useState("");
-  const [strategyFilters, setFilters] = useState([]);
-
-  if ("strategy" in props) {
-    const { strategy, universe, class_name, filters } = props;
-    setStrategyName(strategy);
-    setSelectedClass(class_name || "None");
-    setFilters(filters);
-  }
+  const { strategy, class_name, filters } = props;
+  const [selectedClass, setSelectedClass] = useState(class_name || "");
+  const [strategyName, setStrategyName] = useState(strategy || "");
+  const [strategyFilters, setFilters] = useState(filters || []);
 
   const onClassInput = (e) => {
     setSelectedClass(e.target.value);
@@ -99,7 +92,7 @@ const Form = (props) => {
       </div>
       <div class="form-group">
         <label for="universe">Universe:</label>
-        <select id="universe" name="universe" class="form-select" value="">
+        <select id="universe" name="universe" class="form-select">
           <option>Select Universe</option>
           ${settings.universes.map(
             (o) => html` <option value="${o}">${o}</option> `
@@ -121,21 +114,78 @@ const Form = (props) => {
           )}
         </select>
       </div>
-      ${selectedClass === "None" ? html`${Filters(strategyFilters)}` : ""}
+
+      ${selectedClass === "None" ? html`${Filters({ strategyFilters })}` : ""}
     </form>
   `;
 };
 
-const Filters = (strategyFilters) => {
-  console.log(strategyFilters);
+const Filters = ({ strategyFilters }) => {
   return html`
     <h4>Filters Area</h4>
-    ${strategyFilters.map((o) => html`${renderFilter(o)}) `)}
+    ${strategyFilters.map((filter) => renderFilter(filter))}
   `;
 };
 
-function renderFilter(filter){
+function renderFilter(filter) {
+  if (!Array.isArray(filter.options)) {
+    console.error("Invalid filter options", filter);
+    return html`<div>No valid options available for this filter</div>`;
+  }
 
+  return html`
+    <div class="filter-group">
+      <h5>${filter.label}</h5>
+      ${filter.options.map(
+        (option) => html`
+          <div class="filter-option">
+            <label for="${option.property}">${option.label}</label>
+            ${renderInputField(option)}
+          </div>
+        `
+      )}
+    </div>
+  `;
+}
+
+function renderInputField(option) {
+  switch (option.type) {
+    case "number":
+      return html`
+        <input
+          type="number"
+          id="${option.property}"
+          name="${option.property}"
+          class="form-input"
+          placeholder="Enter ${option.label}"
+        />
+      `;
+    case "calendar":
+      return html`
+        <select
+          id="${option.property}"
+          name="${option.property}"
+          class="form-select"
+        >
+          <option>Select Calendar</option>
+          ${settings.calendars.map(
+            (calendar) => html`
+              <option value="${calendar}">${calendar}</option>
+            `
+          )}
+        </select>
+      `;
+    default:
+      return html`
+        <input
+          type="text"
+          id="${option.property}"
+          name="${option.property}"
+          class="form-input"
+          placeholder="Enter ${option.label}"
+        />
+      `;
+  }
 }
 
 export { Form };

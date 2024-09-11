@@ -4,15 +4,14 @@
   import strategies from "./strategies.json" with { type: "json" };
 
 
-  function App(props) {
-    const s = strategies['finance']
+    function App(props) {
+    const s = strategies['finance'];  // Fetch the 'finance' strategy and its filters
     return html`
-        ${Form({
-            strategy : 'finance',
-            class_name: s['class'],
-           ...s,
-        })}
-
+      ${Form({
+        strategy: 'finance',
+        class_name: s['class'],
+        filters: s['filters']  // Pass the relevant filters for the 'finance' strategy
+      })}
     `;
   }
 
