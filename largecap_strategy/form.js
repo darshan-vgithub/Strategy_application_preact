@@ -67,11 +67,15 @@ const Form = (props) => {
   const [strategyName, setStrategyName] = useState(strategy || "");
   const [strategyFilters, setFilters] = useState(filters || []);
 
-  // Log filters to the console
-  console.log("Filters:", strategyFilters);
-
   const onClassInput = (e) => {
-    setSelectedClass(e.target.value);
+    const selected = e.target.value;
+    setSelectedClass(selected);
+
+    // Find and set the filters for the selected class
+    const filtersForClass = settings.filters.filter(
+      (filter) => filter.class === selected
+    );
+    setFilters(filtersForClass);
   };
 
   const onStrategyNameInput = (e) => {
@@ -160,14 +164,19 @@ const Form = (props) => {
         </select>
       </div>
 
-      ${selectedClass === "None" ? html`${Filters({ strategyFilters })}` : ""}
+      <!-- Render the Filters component only when class is "None" -->
+      ${selectedClass === "None"
+        ? html`<${Filters} strategyFilters=${strategyFilters} />`
+        : null}
     </form>
   `;
 };
 
 const Filters = ({ strategyFilters }) => {
-  // Log filters to the console
-  console.log("Filters in Filters Component:", strategyFilters);
+  if (!Array.isArray(strategyFilters) || strategyFilters.length === 0) {
+    return html`<div>No valid filters available for this class.</div>`;
+  }
+
   return html`
     <h4
       style=${{
@@ -184,7 +193,7 @@ const Filters = ({ strategyFilters }) => {
 };
 
 function renderFilter(filter) {
-  if (!Array.isArray(filter.options)) {
+  if (!Array.isArray(filter.options) || filter.options.length === 0) {
     console.error("Invalid filter options", filter);
     return html`<div>No valid options available for this filter</div>`;
   }
@@ -238,7 +247,6 @@ function renderInputField(option) {
         </select>
       `;
     default:
-      console.error(`Unknown input type: ${option.type}`);
       return html`
         <input
           type="text"
