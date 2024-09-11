@@ -184,23 +184,6 @@ function renderFilter(filter) {
     return html`<div>No valid options available for this filter</div>`;
   }
 
-  const filterGroupStyle = {
-    marginBottom: "15px",
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    background: "#f9f9f9",
-  };
-
-  const filterOptionStyle = {
-    marginBottom: "10px",
-  };
-
-  const filterOptionLabelStyle = {
-    display: "block",
-    marginBottom: "5px",
-  };
-
   return html`
     <div class="filter-group" style=${filterGroupStyle}>
       <h5 style=${{ fontSize: "16px", color: "#555", marginBottom: "10px" }}>
@@ -230,12 +213,7 @@ function renderInputField(option) {
           name="${option.property}"
           class="form-input"
           placeholder="Enter ${option.label}"
-          style=${{
-            width: "100%",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
+          style=${inputStyle}
         />
       `;
     case "calendar":
@@ -244,12 +222,7 @@ function renderInputField(option) {
           id="${option.property}"
           name="${option.property}"
           class="form-select"
-          style=${{
-            width: "100%",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
+          style=${selectStyle}
         >
           <option>Select Calendar</option>
           ${settings.calendars.map(
@@ -260,6 +233,7 @@ function renderInputField(option) {
         </select>
       `;
     default:
+      console.error(`Unknown input type: ${option.type}`);
       return html`
         <input
           type="text"
@@ -267,15 +241,41 @@ function renderInputField(option) {
           name="${option.property}"
           class="form-input"
           placeholder="Enter ${option.label}"
-          style=${{
-            width: "100%",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
+          style=${inputStyle}
         />
       `;
   }
 }
+
+const filterGroupStyle = {
+  marginBottom: "15px",
+  padding: "10px",
+  border: "1px solid #ddd",
+  borderRadius: "4px",
+  background: "#f9f9f9",
+};
+
+const filterOptionStyle = {
+  marginBottom: "10px",
+};
+
+const filterOptionLabelStyle = {
+  display: "block",
+  marginBottom: "5px",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+};
+
+const selectStyle = {
+  width: "100%",
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+};
 
 export { Form };

@@ -3,7 +3,6 @@
       import { Form } from "./form.js";
       import strategies from "./strategies.json" with { type: "json" };
 
-
   function App(props) {
     const s = strategies['finance'];  // Fetch the 'finance' strategy and its filters
     return html`
@@ -14,7 +13,6 @@
       })}
     `;
   }
-
       function StrategyList(props) {
         return html`
         <h1>Strategies</h1>
