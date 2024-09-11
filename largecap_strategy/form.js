@@ -75,11 +75,46 @@ const Form = (props) => {
     setStrategyName(e.target.value);
   };
 
+  const formStyle = {
+    maxWidth: "600px",
+    margin: "20px auto",
+    padding: "20px",
+    background: "#fff",
+    borderRadius: "8px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+  };
+
+  const formGroupStyle = {
+    marginBottom: "15px",
+  };
+
+  const labelStyle = {
+    display: "block",
+    fontWeight: "bold",
+    marginBottom: "5px",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "8px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+  };
+
+  const selectStyle = {
+    width: "100%",
+    padding: "8px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+  };
+
   return html`
-    <form id="strategyForm">
-      <h1>Strategy Form</h1>
-      <div class="form-group">
-        <label for="strategy-name">Strategy:</label>
+    <form id="strategyForm" style=${formStyle}>
+      <h1 style=${{ fontSize: "24px", color: "#333", marginBottom: "20px" }}>
+        Strategy Form
+      </h1>
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="strategy-name" style=${labelStyle}>Strategy:</label>
         <input
           type="text"
           id="strategy-name"
@@ -88,25 +123,32 @@ const Form = (props) => {
           placeholder="Enter your strategy"
           value=${strategyName}
           onChange=${onStrategyNameInput}
+          style=${inputStyle}
         />
       </div>
-      <div class="form-group">
-        <label for="universe">Universe:</label>
-        <select id="universe" name="universe" class="form-select">
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="universe" style=${labelStyle}>Universe:</label>
+        <select
+          id="universe"
+          name="universe"
+          class="form-select"
+          style=${selectStyle}
+        >
           <option>Select Universe</option>
           ${settings.universes.map(
             (o) => html` <option value="${o}">${o}</option> `
           )}
         </select>
       </div>
-      <div class="form-group">
-        <label for="class">Class:</label>
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="class" style=${labelStyle}>Class:</label>
         <select
           id="class"
           name="class"
           class="form-select"
           value=${selectedClass}
           onChange=${onClassInput}
+          style=${selectStyle}
         >
           <option>Select Class</option>
           ${settings.classes.map(
@@ -122,7 +164,16 @@ const Form = (props) => {
 
 const Filters = ({ strategyFilters }) => {
   return html`
-    <h4>Filters Area</h4>
+    <h4
+      style=${{
+        fontSize: "18px",
+        color: "#444",
+        marginTop: "20px",
+        marginBottom: "10px",
+      }}
+    >
+      Filters Area
+    </h4>
     ${strategyFilters.map((filter) => renderFilter(filter))}
   `;
 };
@@ -133,13 +184,34 @@ function renderFilter(filter) {
     return html`<div>No valid options available for this filter</div>`;
   }
 
+  const filterGroupStyle = {
+    marginBottom: "15px",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    background: "#f9f9f9",
+  };
+
+  const filterOptionStyle = {
+    marginBottom: "10px",
+  };
+
+  const filterOptionLabelStyle = {
+    display: "block",
+    marginBottom: "5px",
+  };
+
   return html`
-    <div class="filter-group">
-      <h5>${filter.label}</h5>
+    <div class="filter-group" style=${filterGroupStyle}>
+      <h5 style=${{ fontSize: "16px", color: "#555", marginBottom: "10px" }}>
+        ${filter.label}
+      </h5>
       ${filter.options.map(
         (option) => html`
-          <div class="filter-option">
-            <label for="${option.property}">${option.label}</label>
+          <div class="filter-option" style=${filterOptionStyle}>
+            <label for="${option.property}" style=${filterOptionLabelStyle}>
+              ${option.label}
+            </label>
             ${renderInputField(option)}
           </div>
         `
@@ -158,6 +230,12 @@ function renderInputField(option) {
           name="${option.property}"
           class="form-input"
           placeholder="Enter ${option.label}"
+          style=${{
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
         />
       `;
     case "calendar":
@@ -166,6 +244,12 @@ function renderInputField(option) {
           id="${option.property}"
           name="${option.property}"
           class="form-select"
+          style=${{
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
         >
           <option>Select Calendar</option>
           ${settings.calendars.map(
@@ -183,6 +267,12 @@ function renderInputField(option) {
           name="${option.property}"
           class="form-input"
           placeholder="Enter ${option.label}"
+          style=${{
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
         />
       `;
   }
