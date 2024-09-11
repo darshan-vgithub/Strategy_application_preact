@@ -71,11 +71,16 @@ const Form = (props) => {
     const selected = e.target.value;
     setSelectedClass(selected);
 
-    // Find and set the filters for the selected class
-    const filtersForClass = settings.filters.filter(
-      (filter) => filter.class === selected
-    );
-    setFilters(filtersForClass);
+    // If class is "None", show all available filters
+    if (selected === "None") {
+      setFilters(settings.filters);
+    } else {
+      // Find and set the filters for the selected class
+      const filtersForClass = settings.filters.filter(
+        (filter) => filter.class === selected
+      );
+      setFilters(filtersForClass.length > 0 ? filtersForClass : []);
+    }
   };
 
   const onStrategyNameInput = (e) => {
@@ -164,19 +169,14 @@ const Form = (props) => {
         </select>
       </div>
 
-      <!-- Render the Filters component only when class is "None" -->
-      ${selectedClass === "None"
-        ? html`<${Filters} strategyFilters=${strategyFilters} />`
-        : null}
+      <!-- Render the Filters component -->
+      ${strategyFilters.length > 0 &&
+      html`<${Filters} strategyFilters=${strategyFilters} />`}
     </form>
   `;
 };
 
 const Filters = ({ strategyFilters }) => {
-  if (!Array.isArray(strategyFilters) || strategyFilters.length === 0) {
-    return html`<div>No valid filters available for this class.</div>`;
-  }
-
   return html`
     <h4
       style=${{
@@ -193,9 +193,10 @@ const Filters = ({ strategyFilters }) => {
 };
 
 function renderFilter(filter) {
-  if (!Array.isArray(filter.options) || filter.options.length === 0) {
-    console.error("Invalid filter options", filter);
-    return html`<div>No valid options available for this filter</div>`;
+  // Ensure that filter.options is an array
+  if (!Array.isArray(filter.options)) {
+    console.error(`Expected options to be an array, but got: `, filter.options);
+    return null; // Exit early if filter.options is not an array
   }
 
   return html`
