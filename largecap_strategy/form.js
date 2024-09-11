@@ -67,6 +67,9 @@ const Form = (props) => {
   const [strategyName, setStrategyName] = useState(strategy || "");
   const [strategyFilters, setFilters] = useState(filters || []);
 
+  // Log filters to the console
+  console.log("Filters:", strategyFilters);
+
   const onClassInput = (e) => {
     setSelectedClass(e.target.value);
   };
@@ -163,6 +166,8 @@ const Form = (props) => {
 };
 
 const Filters = ({ strategyFilters }) => {
+  // Log filters to the console
+  console.log("Filters in Filters Component:", strategyFilters);
   return html`
     <h4
       style=${{
