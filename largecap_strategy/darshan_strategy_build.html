@@ -1,0 +1,35 @@
+<script type="module">
+  import { html, render } from "https://esm.sh/htm/preact/standalone";
+  import { Form } from "./form.js";
+  import strategies from "./strategies.json" with { type: "json" };
+
+
+  function App(props) {
+    const s = strategies['finance']
+    return html`
+        ${Form({
+            strategy : 'finance',
+            class_name: s['class'],
+           ...s,
+        })}
+
+    `;
+  }
+
+  function StrategyList(props) {
+    return html`
+    <h1>Strategies</h1>
+        <br/>
+        <div>
+            <a href=''>
+            ${Object.keys(props.strategies).map(o => html`
+                <b>Name: ${o}</b>
+                <br/><br/>
+            `)}
+            </a>
+        </div>
+        `
+  }
+
+  render(html`<${App} name="World" />`, document.body);
+</script>
