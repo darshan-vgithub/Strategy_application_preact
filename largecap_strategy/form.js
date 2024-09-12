@@ -143,7 +143,17 @@ const Form = (props) => {
         (filter) => filter.class === class_name
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
-      setInitialValues({});
+
+      // Initialize values based on new filters
+      const values = filtersForClass.reduce((acc, filter) => {
+        filter.options.forEach((option) => {
+          if (option.property) {
+            acc[option.property] = ""; // Initialize with empty value
+          }
+        });
+        return acc;
+      }, {});
+      setInitialValues(values);
     }
   }, [class_name, universe, filters]);
 
@@ -158,9 +168,7 @@ const Form = (props) => {
     setSelectedClass(selected);
 
     if (selected === "None") {
-      setFilters(filters);
-
-      // Set initial values for filters
+      // Set filters to the current filters and initialize values
       const values = filters.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
@@ -169,13 +177,24 @@ const Form = (props) => {
         });
         return acc;
       }, {});
+      setFilters(filters);
       setInitialValues(values);
     } else {
       const filtersForClass = settings.filters.filter(
         (filter) => filter.class === selected
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
-      setInitialValues({}); // Clear initial values when class changes
+
+      // Initialize values based on new filters
+      const values = filtersForClass.reduce((acc, filter) => {
+        filter.options.forEach((option) => {
+          if (option.property) {
+            acc[option.property] = ""; // Initialize with empty value
+          }
+        });
+        return acc;
+      }, {});
+      setInitialValues(values);
     }
   };
 
@@ -287,26 +306,22 @@ const selectStyle = {
 };
 
 const filterGroupStyle = {
-  marginBottom: "30px",
-  padding: "20px",
-  background: "#fff",
-  borderRadius: "8px",
-  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+  marginBottom: "20px",
 };
 
 const filterTitleStyle = {
   fontSize: "20px",
-  color: "#333",
+  fontWeight: "bold",
   marginBottom: "10px",
 };
 
 const filterOptionStyle = {
-  marginBottom: "15px",
+  marginBottom: "10px",
 };
 
 const filterOptionLabelStyle = {
   display: "block",
-  fontWeight: "600",
-  marginBottom: "5px",
+  marginBottom: "4px",
 };
+
 export { Form };
