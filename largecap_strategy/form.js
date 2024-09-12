@@ -1,8 +1,12 @@
-import { html, useState } from "https://esm.sh/htm/preact/standalone";
+import {
+  html,
+  useState,
+  useEffect,
+} from "https://esm.sh/htm/preact/standalone";
 
 const settings = {
   classes: ["CruiseMomentum", "None"],
-  universes: ["Mcap_100", "Nifty_50", "Nifty_IT"],
+  universes: ["Mcap_100", "Mcap_500", "Nifty_50", "Nifty_IT"],
   calendars: ["XNSE", "BCME"],
   filters: [
     {
@@ -61,32 +65,76 @@ const settings = {
   ],
 };
 
-const Form = (props) => {
-  const { strategy, class_name, filters, onStrategyNameChange } = props;
-  const [selectedClass, setSelectedClass] = useState(class_name);
-  const [strategyName, setStrategyName] = useState(strategy);
-  const [strategyFilters, setFilters] = useState(filters);
+// Filters component to render the filters
+const Filters = ({ strategyFilters }) => {
+  return html`
+    <div>
+      ${strategyFilters.map(
+        (filter) =>
+          html`<div
+            key=${filter.label}
+            class="filter-group"
+            style=${formGroupStyle}
+          >
+            <h4>${filter.label}</h4>
+            ${filter.options.map(
+              (option) =>
+                html`<div class="form-group" style=${formGroupStyle}>
+                  <label for=${option.property} style=${labelStyle}
+                    >${option.label}:</label
+                  >
+                  <input
+                    type="text"
+                    id=${option.property}
+                    name=${option.property}
+                    class="form-input"
+                    style=${inputStyle}
+                  />
+                </div>`
+            )}
+          </div>`
+      )}
+    </div>
+  `;
+};
 
-  // Handle class change
+const Form = (props) => {
+  const { strategy, class_name, universe, filters, onStrategyNameChange } =
+    props;
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedUniverse, setSelectedUniverse] = useState("");
+  const [strategyFilters, setFilters] = useState([]);
+  const [strategyName, setStrategyName] = useState(strategy);
+
+  // Sync state when props change (strategy, class_name, universe, filters)
+  useEffect(() => {
+    setSelectedClass(class_name);
+    setSelectedUniverse(universe);
+    setFilters(filters);
+  }, [class_name, universe, filters]);
+
+  // Handling strategy name change
+  const onStrategyNameInput = (e) => {
+    const name = e.target.value;
+    setStrategyName(name);
+    onStrategyNameChange(e); // Call parent component function
+  };
+
+  // Handling class change and updating filters accordingly
   const onClassInput = (e) => {
     const selected = e.target.value;
     setSelectedClass(selected);
 
-    if (selected === "None") {
-      setFilters(settings.filters);
-    } else {
-      const filtersForClass = settings.filters.filter(
-        (filter) => filter.class === selected
-      );
-      setFilters(filtersForClass.length ? filtersForClass : []);
-    }
+    // Update filters based on selected class
+    const filtersForClass = settings.filters.filter(
+      (filter) => filter.class === selected
+    );
+    setFilters(filtersForClass.length ? filtersForClass : []);
   };
 
-  // Handle strategy name change
-  const onStrategyNameInput = (e) => {
-    const name = e.target.value;
-    setStrategyName(name);
-    onStrategyNameChange(e); // Call the function to update parent component
+  // Handling universe change
+  const onUniverseInput = (e) => {
+    setSelectedUniverse(e.target.value);
   };
 
   return html`
@@ -111,6 +159,8 @@ const Form = (props) => {
           id="universe"
           name="universe"
           class="form-select"
+          value=${selectedUniverse}
+          onChange=${onUniverseInput}
           style=${selectStyle}
         >
           <option>Select Universe</option>
@@ -141,79 +191,6 @@ const Form = (props) => {
     </form>
   `;
 };
-
-const Filters = ({ strategyFilters }) => {
-  return html`
-    <h4 style=${filterTitleStyle}>Filters Area</h4>
-    ${strategyFilters.map((filter) => renderFilter(filter))}
-  `;
-};
-
-function renderFilter(filter) {
-  if (!Array.isArray(filter.options)) {
-    console.error(`Expected options to be an array, but got: `, filter.options);
-    return html`<p>Invalid options format for filter: ${filter.label}</p>`;
-  }
-
-  return html`
-    <div class="filter-group" style=${filterGroupStyle}>
-      <h5 style=${filterLabelStyle}>${filter.label}</h5>
-      ${filter.options.map(
-        (option) => html`
-          <div class="filter-option" style=${filterOptionStyle}>
-            <label for="${option.property}" style=${filterOptionLabelStyle}>
-              ${option.label}
-            </label>
-            ${renderInputField(option)}
-          </div>
-        `
-      )}
-    </div>
-  `;
-}
-
-function renderInputField(option) {
-  switch (option.type) {
-    case "number":
-      return html`
-        <input
-          type="number"
-          id="${option.property}"
-          name="${option.property}"
-          class="form-input"
-          placeholder="Enter ${option.label}"
-          style=${inputStyle}
-        />
-      `;
-    case "calendar":
-      return html`
-        <select
-          id="${option.property}"
-          name="${option.property}"
-          class="form-select"
-          style=${selectStyle}
-        >
-          <option>Select Calendar</option>
-          ${settings.calendars.map(
-            (calendar) => html`
-              <option value="${calendar}">${calendar}</option>
-            `
-          )}
-        </select>
-      `;
-    default:
-      return html`
-        <input
-          type="text"
-          id="${option.property}"
-          name="${option.property}"
-          class="form-input"
-          placeholder="Enter ${option.label}"
-          style=${inputStyle}
-        />
-      `;
-  }
-}
 
 // Improved Styles
 const formStyle = {

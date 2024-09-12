@@ -8,23 +8,37 @@
   </head>
   <body>
     <script type="module">
-            import { html, render,useState } from "https://esm.sh/htm/preact/standalone";
-            import { Form } from "./form.js";
-            import strategies from "./strategies.json" with { type: "json" };
+      import { html, render, useState } from "https://esm.sh/htm/preact/standalone";
+      import { Form } from "./form.js";
+      import strategies from "./strategies.json" with { type: "json" };
 
-             function App() {
+      function App() {
         const [strategyName, setStrategyName] = useState("");
-        const [strategyData, setStrategyData] = useState({ class: "", filters: [] });
+        const [strategyData, setStrategyData] = useState({
+          class: "",
+          filters: [],
+          universe: ""
+        });
 
         const handleStrategyNameChange = (e) => {
-          const name = e.target.value;
+          const name = e.target.value.trim(); // Trim to avoid unwanted spaces
           setStrategyName(name);
+
+          console.log("Entered Strategy Name:", name);
 
           // Check if the strategy exists in the data
           if (strategies[name]) {
-            setStrategyData(strategies[name]);
+            console.log("Found Strategy:", strategies[name]);
+
+            setStrategyData({
+              class: strategies[name].class || "", // Use default empty string if not found
+              filters: strategies[name].filters || [], // Default to an empty array
+              universe: strategies[name].universe || ""
+            });
           } else {
-            setStrategyData({ class: "", filters: [] }); // Clear data if strategy not found
+            console.log("Strategy not found in JSON");
+            // Clear data if strategy not found
+            setStrategyData({ class: "", filters: [], universe: "" });
           }
         };
 
@@ -32,6 +46,7 @@
           <${Form}
             strategy=${strategyName}
             class_name=${strategyData.class || ""}
+            universe=${strategyData.universe || ""}
             filters=${strategyData.filters || []}
             onStrategyNameChange=${handleStrategyNameChange}
           />
