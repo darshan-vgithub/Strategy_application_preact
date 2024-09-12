@@ -6,7 +6,7 @@ import {
 
 const settings = {
   classes: ["CruiseMomentum", "None"],
-  universes: ["Mcap_100", "Mcap_500", "Nifty_50", "Nifty_IT"],
+  universes: ["Mcap_100", "Mcap_500", "Nifty_50", "Nifty_IT", "Nifty_Finance"],
   calendars: ["XNSE", "BCME"],
   filters: [
     {
@@ -74,13 +74,13 @@ const Filters = ({ strategyFilters }) => {
           html`<div
             key=${filter.label}
             class="filter-group"
-            style=${formGroupStyle}
+            style=${filterGroupStyle}
           >
-            <h4>${filter.label}</h4>
+            <h4 style=${filterTitleStyle}>${filter.label}</h4>
             ${filter.options.map(
               (option) =>
-                html`<div class="form-group" style=${formGroupStyle}>
-                  <label for=${option.property} style=${labelStyle}
+                html`<div class="form-group" style=${filterOptionStyle}>
+                  <label for=${option.property} style=${filterOptionLabelStyle}
                     >${option.label}:</label
                   >
                   <input
@@ -106,33 +106,44 @@ const Form = (props) => {
   const [strategyFilters, setFilters] = useState([]);
   const [strategyName, setStrategyName] = useState(strategy);
 
-  // Sync state when props change (strategy, class_name, universe, filters)
   useEffect(() => {
-    setSelectedClass(class_name);
-    setSelectedUniverse(universe);
-    setFilters(filters);
+    if (filters && filters.length > 0) {
+      // If filters are present, automatically set class to "None"
+      setSelectedClass("None");
+      setFilters(filters);
+    } else {
+      // Sync state when props change (class_name, universe)
+      setSelectedClass(class_name);
+      setSelectedUniverse(universe);
+
+      // Update filters based on selected class
+      const filtersForClass = settings.filters.filter(
+        (filter) => filter.class === class_name
+      );
+      setFilters(filtersForClass.length ? filtersForClass : []);
+    }
   }, [class_name, universe, filters]);
 
-  // Handling strategy name change
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
     setStrategyName(name);
     onStrategyNameChange(e); // Call parent component function
   };
 
-  // Handling class change and updating filters accordingly
   const onClassInput = (e) => {
     const selected = e.target.value;
     setSelectedClass(selected);
 
-    // Update filters based on selected class
-    const filtersForClass = settings.filters.filter(
-      (filter) => filter.class === selected
-    );
-    setFilters(filtersForClass.length ? filtersForClass : []);
+    if (selected === "None") {
+      setFilters(filters);
+    } else {
+      const filtersForClass = settings.filters.filter(
+        (filter) => filter.class === selected
+      );
+      setFilters(filtersForClass.length ? filtersForClass : []);
+    }
   };
 
-  // Handling universe change
   const onUniverseInput = (e) => {
     setSelectedUniverse(e.target.value);
   };
@@ -253,12 +264,6 @@ const filterTitleStyle = {
   marginTop: "0",
   marginBottom: "20px",
   textAlign: "center",
-};
-
-const filterLabelStyle = {
-  fontSize: "18px",
-  color: "#555",
-  marginBottom: "15px",
 };
 
 const filterOptionStyle = {
