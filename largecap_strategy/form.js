@@ -6,7 +6,24 @@ import {
 
 const settings = {
   classes: ["CruiseMomentum", "None"],
-  universes: ["Mcap_100", "Mcap_500", "Nifty_50", "Nifty_IT", "Nifty_Finance"],
+  universes: [
+    "Mcap_500",
+    "Nifty_Finance",
+    "Nifty_Healthcare",
+    "Mcap_100",
+    "Dynamic_Focussed_Asset_ETF",
+    "Risk_Tuned_Adaptive_ETF",
+    "Sector_Rotation_ETF",
+    "Commodities_ETF",
+    "Intl_ETF",
+    "Factor_ETF",
+    "Technology_Sector",
+    "Financial_Sector",
+    "Agricultural_Sector",
+    "Energy_Sector",
+    "Automotive_Sector",
+  ],
+
   calendars: ["XNSE", "BCME"],
   filters: [
     {
@@ -66,7 +83,7 @@ const settings = {
 };
 
 // Filters component to render the filters
-const Filters = ({ strategyFilters }) => {
+const Filters = ({ strategyFilters, initialValues }) => {
   return html`
     <div>
       ${strategyFilters.map(
@@ -84,11 +101,12 @@ const Filters = ({ strategyFilters }) => {
                     >${option.label}:</label
                   >
                   <input
-                    type="text"
+                    type=${option.type === "number" ? "number" : "text"}
                     id=${option.property}
                     name=${option.property}
                     class="form-input"
                     style=${inputStyle}
+                    value=${initialValues[option.property] || ""}
                   />
                 </div>`
             )}
@@ -105,12 +123,24 @@ const Form = (props) => {
   const [selectedUniverse, setSelectedUniverse] = useState("");
   const [strategyFilters, setFilters] = useState([]);
   const [strategyName, setStrategyName] = useState(strategy);
+  const [initialValues, setInitialValues] = useState({});
 
   useEffect(() => {
     if (filters && filters.length > 0) {
       // If filters are present, automatically set class to "None"
       setSelectedClass("None");
       setFilters(filters);
+
+      // Set initial values for filters
+      const values = filters.reduce((acc, filter) => {
+        filter.options.forEach((option) => {
+          if (option.property) {
+            acc[option.property] = option[option.property] || "";
+          }
+        });
+        return acc;
+      }, {});
+      setInitialValues(values);
     } else {
       // Sync state when props change (class_name, universe)
       setSelectedClass(class_name);
@@ -121,8 +151,16 @@ const Form = (props) => {
         (filter) => filter.class === class_name
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
+      setInitialValues({});
     }
   }, [class_name, universe, filters]);
+
+  useEffect(() => {
+    // Update universe when strategy has filters
+    if (filters && filters.length > 0) {
+      setSelectedUniverse(universe);
+    }
+  }, [filters, universe]);
 
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
@@ -136,11 +174,23 @@ const Form = (props) => {
 
     if (selected === "None") {
       setFilters(filters);
+
+      // Set initial values for filters
+      const values = filters.reduce((acc, filter) => {
+        filter.options.forEach((option) => {
+          if (option.property) {
+            acc[option.property] = initialValues[option.property] || "";
+          }
+        });
+        return acc;
+      }, {});
+      setInitialValues(values);
     } else {
       const filtersForClass = settings.filters.filter(
         (filter) => filter.class === selected
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
+      setInitialValues({}); // Clear initial values when class changes
     }
   };
 
@@ -198,7 +248,10 @@ const Form = (props) => {
       </div>
 
       ${strategyFilters.length > 0 &&
-      html`<${Filters} strategyFilters=${strategyFilters} />`}
+      html`<${Filters}
+        strategyFilters=${strategyFilters}
+        initialValues=${initialValues}
+      />`}
     </form>
   `;
 };
@@ -264,6 +317,12 @@ const filterTitleStyle = {
   marginTop: "0",
   marginBottom: "20px",
   textAlign: "center",
+};
+
+const filterLabelStyle = {
+  fontSize: "18px",
+  color: "#555",
+  marginBottom: "15px",
 };
 
 const filterOptionStyle = {
