@@ -1,32 +1,46 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flameback||Strategy</title>
+    <!-- Add the title here -->
+    <link rel="icon" href="path/to/favicon.ico" type="image/x-icon" />
+    <!-- Add the favicon here -->
+  </head>
+  <body>
+    <script type="module">
       import { html, render } from "https://esm.sh/htm/preact/standalone";
       import { Form } from "./form.js";
       import strategies from "./strategies.json" with { type: "json" };
 
-  function App(props) {
-    const s = strategies['finance'];  // Fetch the 'finance' strategy and its filters
-    return html`
-      ${Form({
-        strategy: 'finance',
-        class_name: s['class'],
-        filters: s['filters']  // Pass the relevant filters for the 'finance' strategy
-      })}
-    `;
-  }
+      function App(props) {
+          const s = strategies['finance'];  // Fetch the 'finance' strategy and its filters
+          return html`
+              ${Form({
+                  strategy: 'finance',
+                  class_name: s['class'],
+                  filters: s['filters']  // Pass the relevant filters for the 'finance' strategy
+              })}
+          `;
+      }
+
       function StrategyList(props) {
-        return html`
-        <h1>Strategies</h1>
-            <br/>
-            <div>
-                <a href=''>
-                ${Object.keys(props.strategies).map(o => html`
-                    <b>Name: ${o}</b>
-                    <br/><br/>
-                `)}
-                </a>
-            </div>
-            `
+          return html`
+          <h1>Strategies</h1>
+              <br/>
+              <div>
+                  <a href=''>
+                  ${Object.keys(props.strategies).map(o => html`
+                      <b>Name: ${o}</b>
+                      <br/><br/>
+                  `)}
+                  </a>
+              </div>
+          `;
       }
 
       render(html`<${App} name="World" />`, document.body);
-</script>
+    </script>
+  </body>
+</html>
