@@ -4,6 +4,7 @@ import {
   useEffect,
 } from "https://esm.sh/htm/preact/standalone";
 
+// Settings configuration
 const settings = {
   classes: ["CruiseMomentum", "None"],
   universes: [
@@ -23,55 +24,30 @@ const settings = {
     "Energy_Sector",
     "Automotive_Sector",
   ],
-
   calendars: ["XNSE", "BCME"],
   filters: [
     {
       label: "Market Cap Filter",
       class: "McapFilter",
       options: [
-        {
-          label: "Minimum Cap",
-          property: "min_market_cap",
-          type: "number",
-        },
+        { label: "Minimum Cap", property: "min_market_cap", type: "number" },
       ],
     },
     {
       label: "Generic Momentum Filter",
       class: "AbsoluteReturnFilter",
       options: [
-        {
-          label: "Calendar",
-          property: "calendar_name",
-          type: "calendar",
-        },
-        {
-          label: "Look up window",
-          property: "lookup_window",
-          type: "number",
-        },
-        {
-          label: "Return size",
-          property: "return_size",
-          type: "number",
-        },
+        { label: "Calendar", property: "calendar_name", type: "calendar" },
+        { label: "Look up window", property: "lookup_window", type: "number" },
+        { label: "Return size", property: "return_size", type: "number" },
       ],
     },
     {
       label: "Positive Movement Filter",
       class: "PositiveMovementFilter",
       options: [
-        {
-          label: "Calendar",
-          property: "calendar",
-          type: "calendar",
-        },
-        {
-          label: "Look up window",
-          property: "lookup_window",
-          type: "number",
-        },
+        { label: "Calendar", property: "calendar", type: "calendar" },
+        { label: "Look up window", property: "lookup_window", type: "number" },
         {
           label: "Positive return size",
           property: "positive_return_size",
@@ -97,9 +73,9 @@ const Filters = ({ strategyFilters, initialValues }) => {
             ${filter.options.map(
               (option) =>
                 html`<div class="form-group" style=${filterOptionStyle}>
-                  <label for=${option.property} style=${filterOptionLabelStyle}
-                    >${option.label}:</label
-                  >
+                  <label for=${option.property} style=${filterOptionLabelStyle}>
+                    ${option.label}:
+                  </label>
                   <input
                     type=${option.type === "number" ? "number" : "text"}
                     id=${option.property}
@@ -116,6 +92,7 @@ const Filters = ({ strategyFilters, initialValues }) => {
   `;
 };
 
+// Form Component
 const Form = (props) => {
   const { strategy, class_name, universe, filters, onStrategyNameChange } =
     props;
@@ -126,25 +103,40 @@ const Form = (props) => {
   const [initialValues, setInitialValues] = useState({});
 
   useEffect(() => {
-    if (filters && filters.length > 0) {
-      // If filters are present, automatically set class to "None"
-      setSelectedClass("None");
-      setFilters(filters);
+    console.log("Class/Universe/Filters changed:", {
+      class_name,
+      filters,
+      universe,
+    });
 
-      // Set initial values for filters
-      const values = filters.reduce((acc, filter) => {
+    if (filters && filters.length > 0) {
+      const classFilters = filters;
+      setSelectedClass(class_name || "None");
+      setSelectedUniverse(universe || "");
+
+      // Debugging: Log current filters
+      console.log("Current Filters:", classFilters);
+
+      // Update filters based on class_name
+      const filtersForClass = classFilters; // Directly using provided filters
+      setFilters(filtersForClass);
+
+      // Initialize values based on filters
+      const values = classFilters.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
-            acc[option.property] = option[option.property] || "";
+            acc[option.property] = ""; // Initialize with empty value
           }
         });
         return acc;
       }, {});
       setInitialValues(values);
+
+      // Debugging: Log initialized values
+      console.log("Initial Values:", values);
     } else {
-      // Sync state when props change (class_name, universe)
-      setSelectedClass(class_name);
-      setSelectedUniverse(universe);
+      setSelectedClass(class_name || ""); // Default to empty if not provided
+      setSelectedUniverse(universe || "");
 
       // Update filters based on selected class
       const filtersForClass = settings.filters.filter(
@@ -154,13 +146,6 @@ const Form = (props) => {
       setInitialValues({});
     }
   }, [class_name, universe, filters]);
-
-  useEffect(() => {
-    // Update universe when strategy has filters
-    if (filters && filters.length > 0) {
-      setSelectedUniverse(universe);
-    }
-  }, [filters, universe]);
 
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
@@ -281,48 +266,38 @@ const formGroupStyle = {
 const labelStyle = {
   display: "block",
   fontWeight: "600",
-  marginBottom: "10px",
+  marginBottom: "8px",
   color: "#333",
 };
 
 const inputStyle = {
   width: "100%",
   padding: "12px",
-  borderRadius: "8px",
   border: "1px solid #ccc",
-  fontSize: "16px",
+  borderRadius: "4px",
   boxSizing: "border-box",
 };
 
 const selectStyle = {
   width: "100%",
   padding: "12px",
-  borderRadius: "8px",
   border: "1px solid #ccc",
-  fontSize: "16px",
+  borderRadius: "4px",
   boxSizing: "border-box",
 };
 
 const filterGroupStyle = {
   marginBottom: "30px",
   padding: "20px",
-  borderRadius: "8px",
   background: "#fff",
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  borderRadius: "8px",
+  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
 };
 
 const filterTitleStyle = {
   fontSize: "20px",
-  color: "#444",
-  marginTop: "0",
-  marginBottom: "20px",
-  textAlign: "center",
-};
-
-const filterLabelStyle = {
-  fontSize: "18px",
-  color: "#555",
-  marginBottom: "15px",
+  color: "#333",
+  marginBottom: "10px",
 };
 
 const filterOptionStyle = {
@@ -331,9 +306,7 @@ const filterOptionStyle = {
 
 const filterOptionLabelStyle = {
   display: "block",
-  marginBottom: "6px",
-  fontWeight: "500",
-  color: "#555",
+  fontWeight: "600",
+  marginBottom: "5px",
 };
-
 export { Form };
