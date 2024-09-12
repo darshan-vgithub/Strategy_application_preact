@@ -71,53 +71,18 @@ const Form = (props) => {
     const selected = e.target.value;
     setSelectedClass(selected);
 
-    // If class is "None", show all available filters
     if (selected === "None") {
       setFilters(settings.filters);
     } else {
-      // Find and set the filters for the selected class
       const filtersForClass = settings.filters.filter(
         (filter) => filter.class === selected
       );
-      setFilters(filtersForClass.length > 0 ? filtersForClass : []);
+      setFilters(filtersForClass.length ? filtersForClass : []);
     }
   };
 
   const onStrategyNameInput = (e) => {
     setStrategyName(e.target.value);
-  };
-
-  const formStyle = {
-    maxWidth: "600px",
-    margin: "20px auto",
-    padding: "20px",
-    background: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-  };
-
-  const formGroupStyle = {
-    marginBottom: "15px",
-  };
-
-  const labelStyle = {
-    display: "block",
-    fontWeight: "bold",
-    marginBottom: "5px",
-  };
-
-  const inputStyle = {
-    width: "100%",
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-  };
-
-  const selectStyle = {
-    width: "100%",
-    padding: "8px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
   };
 
   return html`
@@ -169,7 +134,6 @@ const Form = (props) => {
         </select>
       </div>
 
-      <!-- Render the Filters component -->
       ${strategyFilters.length > 0 &&
       html`<${Filters} strategyFilters=${strategyFilters} />`}
     </form>
@@ -193,10 +157,9 @@ const Filters = ({ strategyFilters }) => {
 };
 
 function renderFilter(filter) {
-  // Ensure that filter.options is an array
   if (!Array.isArray(filter.options)) {
     console.error(`Expected options to be an array, but got: `, filter.options);
-    return null; // Exit early if filter.options is not an array
+    return null;
   }
 
   return html`
@@ -261,20 +224,23 @@ function renderInputField(option) {
   }
 }
 
-const filterGroupStyle = {
+// Styles
+const formStyle = {
+  maxWidth: "600px",
+  margin: "20px auto",
+  padding: "20px",
+  background: "#fff",
+  borderRadius: "8px",
+  boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+};
+
+const formGroupStyle = {
   marginBottom: "15px",
-  padding: "10px",
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  background: "#f9f9f9",
 };
 
-const filterOptionStyle = {
-  marginBottom: "10px",
-};
-
-const filterOptionLabelStyle = {
+const labelStyle = {
   display: "block",
+  fontWeight: "bold",
   marginBottom: "5px",
 };
 
@@ -290,6 +256,23 @@ const selectStyle = {
   padding: "8px",
   border: "1px solid #ccc",
   borderRadius: "4px",
+};
+
+const filterGroupStyle = {
+  marginBottom: "15px",
+  padding: "10px",
+  border: "1px solid #ddd",
+  borderRadius: "4px",
+  background: "#f9f9f9",
+};
+
+const filterOptionStyle = {
+  marginBottom: "10px",
+};
+
+const filterOptionLabelStyle = {
+  display: "block",
+  marginBottom: "5px",
 };
 
 export { Form };
