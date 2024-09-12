@@ -63,10 +63,11 @@ const settings = {
 
 const Form = (props) => {
   const { strategy, class_name, filters, onStrategyNameChange } = props;
-  const [selectedClass, setSelectedClass] = useState(class_name || "");
-  const [strategyName, setStrategyName] = useState(strategy || "");
-  const [strategyFilters, setFilters] = useState(filters || []);
+  const [selectedClass, setSelectedClass] = useState(class_name);
+  const [strategyName, setStrategyName] = useState(strategy);
+  const [strategyFilters, setFilters] = useState(filters);
 
+  // Handle class change
   const onClassInput = (e) => {
     const selected = e.target.value;
     setSelectedClass(selected);
@@ -81,10 +82,11 @@ const Form = (props) => {
     }
   };
 
+  // Handle strategy name change
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
     setStrategyName(name);
-    onStrategyNameChange(e); // Call the function passed as a prop to update the parent component
+    onStrategyNameChange(e); // Call the function to update parent component
   };
 
   return html`

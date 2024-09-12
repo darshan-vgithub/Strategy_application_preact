@@ -8,21 +8,23 @@
   </head>
   <body>
     <script type="module">
-      import { html, render,useState } from "https://esm.sh/htm/preact/standalone";
-      import { Form } from "./form.js";
-      import strategies from "./strategies.json" with { type: "json" };
+            import { html, render,useState } from "https://esm.sh/htm/preact/standalone";
+            import { Form } from "./form.js";
+            import strategies from "./strategies.json" with { type: "json" };
 
-        function App() {
+             function App() {
         const [strategyName, setStrategyName] = useState("");
-        const [strategyData, setStrategyData] = useState({});
+        const [strategyData, setStrategyData] = useState({ class: "", filters: [] });
 
         const handleStrategyNameChange = (e) => {
           const name = e.target.value;
           setStrategyName(name);
+
+          // Check if the strategy exists in the data
           if (strategies[name]) {
             setStrategyData(strategies[name]);
           } else {
-            setStrategyData({});
+            setStrategyData({ class: "", filters: [] }); // Clear data if strategy not found
           }
         };
 
