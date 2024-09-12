@@ -8,24 +8,35 @@
   </head>
   <body>
     <script type="module">
-            import { html, render } from "https://esm.sh/htm/preact/standalone";
-            import { Form } from "./form.js";
-            import strategies from "./strategies.json" with { type: "json" };
+      import { html, render,useState } from "https://esm.sh/htm/preact/standalone";
+      import { Form } from "./form.js";
+      import strategies from "./strategies.json" with { type: "json" };
 
-           function App() {
-        const s = strategies['finance'];  // Fetch the 'finance' strategy and its filters
-        console.log('Loaded filters:', s['filters']);  // Debugging information
+        function App() {
+        const [strategyName, setStrategyName] = useState("");
+        const [strategyData, setStrategyData] = useState({});
+
+        const handleStrategyNameChange = (e) => {
+          const name = e.target.value;
+          setStrategyName(name);
+          if (strategies[name]) {
+            setStrategyData(strategies[name]);
+          } else {
+            setStrategyData({});
+          }
+        };
+
         return html`
           <${Form}
-            strategy="finance"
-            class_name=${s['class']}
-            filters=${s['filters']}
+            strategy=${strategyName}
+            class_name=${strategyData.class || ""}
+            filters=${strategyData.filters || []}
+            onStrategyNameChange=${handleStrategyNameChange}
           />
         `;
       }
 
-
-            render(html`<${App} />`, document.body);
+      render(html`<${App} />`, document.body);
     </script>
   </body>
 </html>

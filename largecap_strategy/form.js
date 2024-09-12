@@ -62,7 +62,7 @@ const settings = {
 };
 
 const Form = (props) => {
-  const { strategy, class_name, filters } = props;
+  const { strategy, class_name, filters, onStrategyNameChange } = props;
   const [selectedClass, setSelectedClass] = useState(class_name || "");
   const [strategyName, setStrategyName] = useState(strategy || "");
   const [strategyFilters, setFilters] = useState(filters || []);
@@ -82,7 +82,9 @@ const Form = (props) => {
   };
 
   const onStrategyNameInput = (e) => {
-    setStrategyName(e.target.value);
+    const name = e.target.value;
+    setStrategyName(name);
+    onStrategyNameChange(e); // Call the function passed as a prop to update the parent component
   };
 
   return html`
@@ -247,23 +249,19 @@ const labelStyle = {
 const inputStyle = {
   width: "100%",
   padding: "8px",
-  border: "1px solid #ccc",
   borderRadius: "4px",
+  border: "1px solid #ddd",
 };
 
 const selectStyle = {
   width: "100%",
   padding: "8px",
-  border: "1px solid #ccc",
   borderRadius: "4px",
+  border: "1px solid #ddd",
 };
 
 const filterGroupStyle = {
-  marginBottom: "15px",
-  padding: "10px",
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  background: "#f9f9f9",
+  marginBottom: "20px",
 };
 
 const filterOptionStyle = {
