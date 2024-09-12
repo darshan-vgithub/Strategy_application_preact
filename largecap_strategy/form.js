@@ -91,9 +91,7 @@ const Form = (props) => {
 
   return html`
     <form id="strategyForm" style=${formStyle}>
-      <h1 style=${{ fontSize: "24px", color: "#333", marginBottom: "20px" }}>
-        Strategy Form
-      </h1>
+      <h1 style=${titleStyle}>Strategy Form</h1>
       <div class="form-group" style=${formGroupStyle}>
         <label for="strategy-name" style=${labelStyle}>Strategy:</label>
         <input
@@ -146,16 +144,7 @@ const Form = (props) => {
 
 const Filters = ({ strategyFilters }) => {
   return html`
-    <h4
-      style=${{
-        fontSize: "18px",
-        color: "#444",
-        marginTop: "20px",
-        marginBottom: "10px",
-      }}
-    >
-      Filters Area
-    </h4>
+    <h4 style=${filterTitleStyle}>Filters Area</h4>
     ${strategyFilters.map((filter) => renderFilter(filter))}
   `;
 };
@@ -168,9 +157,7 @@ function renderFilter(filter) {
 
   return html`
     <div class="filter-group" style=${filterGroupStyle}>
-      <h5 style=${{ fontSize: "16px", color: "#555", marginBottom: "10px" }}>
-        ${filter.label}
-      </h5>
+      <h5 style=${filterLabelStyle}>${filter.label}</h5>
       ${filter.options.map(
         (option) => html`
           <div class="filter-option" style=${filterOptionStyle}>
@@ -228,51 +215,84 @@ function renderInputField(option) {
   }
 }
 
-// Styles
+// Improved Styles
 const formStyle = {
   maxWidth: "600px",
   margin: "20px auto",
-  padding: "20px",
-  background: "#fff",
-  borderRadius: "8px",
-  boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+  padding: "30px",
+  background: "#f9f9f9",
+  borderRadius: "12px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  fontFamily: "'Arial', sans-serif",
+};
+
+const titleStyle = {
+  fontSize: "28px",
+  color: "#222",
+  marginBottom: "20px",
+  textAlign: "center",
 };
 
 const formGroupStyle = {
-  marginBottom: "15px",
+  marginBottom: "20px",
 };
 
 const labelStyle = {
   display: "block",
-  fontWeight: "bold",
-  marginBottom: "5px",
+  fontWeight: "600",
+  marginBottom: "10px",
+  color: "#333",
 };
 
 const inputStyle = {
   width: "100%",
-  padding: "8px",
-  borderRadius: "4px",
-  border: "1px solid #ddd",
+  padding: "12px",
+  borderRadius: "8px",
+  border: "1px solid #ccc",
+  fontSize: "16px",
+  boxSizing: "border-box",
 };
 
 const selectStyle = {
   width: "100%",
-  padding: "8px",
-  borderRadius: "4px",
-  border: "1px solid #ddd",
+  padding: "12px",
+  borderRadius: "8px",
+  border: "1px solid #ccc",
+  fontSize: "16px",
+  boxSizing: "border-box",
 };
 
 const filterGroupStyle = {
+  marginBottom: "30px",
+  padding: "20px",
+  borderRadius: "8px",
+  background: "#fff",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+};
+
+const filterTitleStyle = {
+  fontSize: "20px",
+  color: "#444",
+  marginTop: "0",
   marginBottom: "20px",
+  textAlign: "center",
+};
+
+const filterLabelStyle = {
+  fontSize: "18px",
+  color: "#555",
+  marginBottom: "15px",
 };
 
 const filterOptionStyle = {
-  marginBottom: "10px",
+  marginBottom: "15px",
 };
 
 const filterOptionLabelStyle = {
   display: "block",
-  marginBottom: "5px",
+  marginBottom: "6px",
+  fontWeight: "500",
+  color: "#555",
 };
 
 export { Form };
