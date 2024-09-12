@@ -9,25 +9,31 @@
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "return_size": 50
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "return_size": 50
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
@@ -37,25 +43,31 @@
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "return_size": 50
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "return_size": 50
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
@@ -65,19 +77,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "return_size": 40
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "return_size": 40
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "positive_return_size": 15
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "positive_return_size": 15
+          }
+        ]
       }
     ]
   },
@@ -87,19 +103,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "return_size": 100
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "return_size": 100
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "positive_return_size": 50
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "positive_return_size": 50
+          }
+        ]
       }
     ]
   },
@@ -109,25 +129,31 @@
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 1000
-        }
+        "options": [
+          {
+            "min_market_cap": 1000
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "return_size": 50
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "return_size": 50
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 252,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 252,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
@@ -137,19 +163,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 2
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 2
+          }
+        ]
       }
     ]
   },
@@ -159,19 +189,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 2
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 2
+          }
+        ]
       }
     ]
   },
@@ -181,19 +215,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 2
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 2
+          }
+        ]
       }
     ]
   },
@@ -203,19 +241,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 2
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 2
+          }
+        ]
       }
     ]
   },
@@ -225,19 +267,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 2
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 2
+          }
+        ]
       }
     ]
   },
@@ -247,19 +293,23 @@
     "filters": [
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 2
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 2
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 2
+          }
+        ]
       }
     ]
   },
@@ -269,25 +319,31 @@
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 10
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
@@ -297,25 +353,31 @@
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 10
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
@@ -325,165 +387,99 @@
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 10
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
-  "healthcare_sector": {
+  "energy_sector": {
     "class": null,
-    "universe": "Healthcare_Sector",
+    "universe": "Energy_Sector",
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 10
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   },
-  "b2b_sector": {
+  "automotive_sector": {
     "class": null,
-    "universe": "B2B_Sector",
+    "universe": "Automotive_Sector",
     "filters": [
       {
         "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
+        "options": [
+          {
+            "min_market_cap": 2500
+          }
+        ]
       },
       {
         "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "return_size": 10
+          }
+        ]
       },
       {
         "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
-      }
-    ]
-  },
-  "consumer_sector": {
-    "class": null,
-    "universe": "Consumer_Sector",
-    "filters": [
-      {
-        "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
-      },
-      {
-        "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
-      },
-      {
-        "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
-      }
-    ]
-  },
-  "manufacturing_sector": {
-    "class": null,
-    "universe": "Manufacturing_Sector",
-    "filters": [
-      {
-        "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
-      },
-      {
-        "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
-      },
-      {
-        "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
-      }
-    ]
-  },
-  "housing_sector": {
-    "class": null,
-    "universe": "Housing_Sector",
-    "filters": [
-      {
-        "filter": "McapFilter",
-        "options": {
-          "min_market_cap": 2500
-        }
-      },
-      {
-        "filter": "AbsoluteReturnFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "return_size": 10
-        }
-      },
-      {
-        "filter": "PositiveMovementFilter",
-        "options": {
-          "calendar": "Calendar",
-          "lookup_window": 20,
-          "positive_return_size": 10
-        }
+        "options": [
+          {
+            "calendar": "Calendar",
+            "lookup_window": 20,
+            "positive_return_size": 10
+          }
+        ]
       }
     ]
   }

@@ -159,7 +159,7 @@ const Filters = ({ strategyFilters }) => {
 function renderFilter(filter) {
   if (!Array.isArray(filter.options)) {
     console.error(`Expected options to be an array, but got: `, filter.options);
-    return null;
+    return html`<p>Invalid options format for filter: ${filter.label}</p>`;
   }
 
   return html`
