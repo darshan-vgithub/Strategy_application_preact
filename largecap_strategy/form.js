@@ -168,8 +168,9 @@ const Form = (props) => {
     setSelectedClass(selected);
 
     if (selected === "None") {
-      // Set filters to the current filters and initialize values
-      const values = filters.reduce((acc, filter) => {
+      // If "None" is selected, you may want to clear the filters
+      setFilters(settings.filters); // Use all available filters or an empty array
+      const values = settings.filters.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
             acc[option.property] = initialValues[option.property] || "";
@@ -177,7 +178,6 @@ const Form = (props) => {
         });
         return acc;
       }, {});
-      setFilters(filters);
       setInitialValues(values);
     } else {
       const filtersForClass = settings.filters.filter(
