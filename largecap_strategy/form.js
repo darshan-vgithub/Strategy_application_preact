@@ -58,7 +58,6 @@ const settings = {
   ],
 };
 
-// Filters component to render the filters
 const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
   return html`
     <div>
