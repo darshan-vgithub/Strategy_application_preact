@@ -62,34 +62,33 @@ const settings = {
 const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
   return html`
     <div>
-      ${strategyFilters.map(
-        (filter) =>
-          html`<div
-            key=${filter.label}
-            class="filter-group"
-            style=${filterGroupStyle}
-          >
-            <h4 style=${filterTitleStyle}>${filter.label}</h4>
-            ${filter.options.map(
-              (option) =>
-                html`<div class="form-group" style=${filterOptionStyle}>
-                  <label for=${option.property} style=${filterOptionLabelStyle}>
-                    ${option.label}:
-                  </label>
-                  <input
-                    type=${option.type === "number" ? "number" : "text"}
-                    id=${option.property}
-                    name=${option.property}
-                    class="form-input"
-                    style=${inputStyle}
-                    value=${initialValues[option.property] || ""}
-                    onInput=${(e) =>
-                      onInputChange(e.target.name, e.target.value)}
-                  />
-                </div>`
-            )}
-          </div>`
-      )}
+      ${strategyFilters.map((f) => {
+        const filter = settings.filters.filter((o) => o.class === f.filter)[0];
+        return html`<div
+          key=${filter.label}
+          class="filter-group"
+          style=${filterGroupStyle}
+        >
+          <h4 style=${filterTitleStyle}>${filter.label}</h4>
+          ${filter.options.map(
+            (option) =>
+              html`<div class="form-group" style=${filterOptionStyle}>
+                <label for=${option.property} style=${filterOptionLabelStyle}>
+                  ${option.label}:
+                </label>
+                <input
+                  type=${option.type === "number" ? "number" : "text"}
+                  id=${option.property}
+                  name=${option.property}
+                  class="form-input"
+                  style=${inputStyle}
+                  value=${initialValues[option.property] || ""}
+                  onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+                />
+              </div>`
+          )}
+        </div>`;
+      })}
     </div>
   `;
 };
