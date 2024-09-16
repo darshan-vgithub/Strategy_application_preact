@@ -59,7 +59,7 @@ const settings = {
 };
 
 // Filters component to render the filters
-const Filters = ({ strategyFilters, initialValues }) => {
+const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
   return html`
     <div>
       ${strategyFilters.map(
@@ -76,14 +76,12 @@ const Filters = ({ strategyFilters, initialValues }) => {
                   <label for=${option.property} style=${filterOptionLabelStyle}>
                     ${option.label}:
                   </label>
-                  <input
-                    type=${option.type === "number" ? "number" : "text"}
-                    id=${option.property}
-                    name=${option.property}
-                    class="form-input"
-                    style=${inputStyle}
-                    value=${initialValues[option.property] || ""}
-                  />
+                  <input type=${option.type === "number" ? "number" : "text"}
+                  id=${option.property} name=${option.property}
+                  class="form-input" style=${inputStyle}
+                  value=${initialValues[option.property] || ""}
+                  onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+                  // Handle input change />
                 </div>`
             )}
           </div>`
@@ -110,19 +108,15 @@ const Form = (props) => {
     });
 
     if (filters && filters.length > 0) {
-      const classFilters = filters;
       setSelectedClass(class_name || "None");
       setSelectedUniverse(universe || "");
 
-      // Debugging: Log current filters
-      console.log("Current Filters:", classFilters);
-
       // Update filters based on class_name
-      const filtersForClass = classFilters;
+      const filtersForClass = filters;
       setFilters(filtersForClass);
 
       // Initialize values based on filters
-      const values = classFilters.reduce((acc, filter) => {
+      const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
             acc[option.property] = ""; // Initialize with empty value
@@ -144,11 +138,11 @@ const Form = (props) => {
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
 
-      // Initialize values based on new filters
+      // Prefill with JSON data if available
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
-            acc[option.property] = ""; // Initialize with empty value
+            acc[option.property] = ""; // Set from data source
           }
         });
         return acc;
@@ -177,11 +171,11 @@ const Form = (props) => {
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
 
-      // Initialize values based on new filters
+      // Initialize values based on JSON data if available
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
-            acc[option.property] = ""; // Initialize with empty value
+            acc[option.property] = ""; // Set from data source
           }
         });
         return acc;
@@ -192,6 +186,13 @@ const Form = (props) => {
 
   const onUniverseInput = (e) => {
     setSelectedUniverse(e.target.value);
+  };
+
+  const handleInputChange = (name, value) => {
+    setInitialValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   return html`
@@ -247,12 +248,13 @@ const Form = (props) => {
       html`<${Filters}
         strategyFilters=${strategyFilters}
         initialValues=${initialValues}
+        onInputChange=${handleInputChange}
       />`}
     </form>
   `;
 };
 
-// Improved Styles
+// Styles remain unchanged
 const formStyle = {
   maxWidth: "600px",
   margin: "20px auto",
@@ -264,10 +266,10 @@ const formStyle = {
 };
 
 const titleStyle = {
-  fontSize: "28px",
-  color: "#222",
   marginBottom: "20px",
-  textAlign: "center",
+  fontSize: "24px",
+  fontWeight: "bold",
+  color: "#333",
 };
 
 const formGroupStyle = {
@@ -276,49 +278,45 @@ const formGroupStyle = {
 
 const labelStyle = {
   display: "block",
-  fontWeight: "600",
-  marginBottom: "8px",
-  color: "#333",
+  marginBottom: "5px",
+  fontWeight: "bold",
+  color: "#555",
 };
 
 const inputStyle = {
   width: "100%",
-  padding: "12px",
-  border: "1px solid #ccc",
-  borderRadius: "4px",
-  boxSizing: "border-box",
+  padding: "10px",
+  borderRadius: "5px",
+  border: "1px solid #ddd",
 };
 
 const selectStyle = {
   width: "100%",
-  padding: "12px",
-  border: "1px solid #ccc",
-  borderRadius: "4px",
-  boxSizing: "border-box",
+  padding: "10px",
+  borderRadius: "5px",
+  border: "1px solid #ddd",
 };
 
 const filterGroupStyle = {
   marginBottom: "20px",
-  padding: "12px",
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  backgroundColor: "#f0f0f0",
 };
 
 const filterTitleStyle = {
-  fontSize: "18px",
-  color: "#222",
   marginBottom: "10px",
+  fontSize: "18px",
+  fontWeight: "bold",
+  color: "#444",
 };
 
 const filterOptionStyle = {
-  marginBottom: "12px",
+  marginBottom: "10px",
 };
 
 const filterOptionLabelStyle = {
   display: "block",
-  marginBottom: "4px",
-  fontSize: "14px",
+  marginBottom: "5px",
+  fontWeight: "bold",
+  color: "#666",
 };
 
 export { Form };
