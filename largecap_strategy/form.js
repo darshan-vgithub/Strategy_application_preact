@@ -118,7 +118,7 @@ const Form = (props) => {
       console.log("Current Filters:", classFilters);
 
       // Update filters based on class_name
-      const filtersForClass = classFilters; // Directly using provided filters
+      const filtersForClass = classFilters;
       setFilters(filtersForClass);
 
       // Initialize values based on filters
@@ -135,7 +135,7 @@ const Form = (props) => {
       // Debugging: Log initialized values
       console.log("Initial Values:", values);
     } else {
-      setSelectedClass(class_name || ""); // Default to empty if not provided
+      setSelectedClass(class_name || "");
       setSelectedUniverse(universe || "");
 
       // Update filters based on selected class
@@ -168,17 +168,9 @@ const Form = (props) => {
     setSelectedClass(selected);
 
     if (selected === "None") {
-      // If "None" is selected, you may want to clear the filters
-      setFilters(settings.filters); // Use all available filters or an empty array
-      const values = settings.filters.reduce((acc, filter) => {
-        filter.options.forEach((option) => {
-          if (option.property) {
-            acc[option.property] = initialValues[option.property] || "";
-          }
-        });
-        return acc;
-      }, {});
-      setInitialValues(values);
+      // If "None" is selected, clear the filters
+      setFilters([]);
+      setInitialValues({});
     } else {
       const filtersForClass = settings.filters.filter(
         (filter) => filter.class === selected
@@ -307,21 +299,26 @@ const selectStyle = {
 
 const filterGroupStyle = {
   marginBottom: "20px",
+  padding: "12px",
+  border: "1px solid #ddd",
+  borderRadius: "8px",
+  backgroundColor: "#f0f0f0",
 };
 
 const filterTitleStyle = {
-  fontSize: "20px",
-  fontWeight: "bold",
+  fontSize: "18px",
+  color: "#222",
   marginBottom: "10px",
 };
 
 const filterOptionStyle = {
-  marginBottom: "10px",
+  marginBottom: "12px",
 };
 
 const filterOptionLabelStyle = {
   display: "block",
   marginBottom: "4px",
+  fontSize: "14px",
 };
 
 export { Form };
