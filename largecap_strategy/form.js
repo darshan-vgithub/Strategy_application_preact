@@ -60,7 +60,6 @@ const settings = {
 
 // Sample JSON data for strategies
 const fetchStrategiesData = async () => {
-  // Replace this with the actual path to your JSON file
   const response = await fetch("/largecap_strategy/strategies.json");
   const data = await response.json();
   return data;
@@ -81,46 +80,26 @@ const Form = (props) => {
       const data = await fetchStrategiesData();
       setStrategiesData(data);
 
-      if (filters && filters.length > 0) {
-        // Set filters based on props
-        const filtersForClass = filters;
-        setFilters(filtersForClass);
+      const filtersForClass =
+        filters && filters.length > 0
+          ? filters
+          : settings.filters.filter((filter) => filter.class === class_name);
 
-        // Initialize values based on filters
-        const values = filtersForClass.reduce((acc, filter) => {
-          filter.options.forEach((option) => {
-            if (option.property) {
-              acc[option.property] = ""; // Initialize with empty value
-            }
-          });
-          return acc;
-        }, {});
-        setInitialValues(values);
+      setFilters(filtersForClass);
 
-        // Handle class and universe
-        setSelectedClass(class_name || "None");
-        setSelectedUniverse(universe || "");
-      } else {
-        setSelectedClass(class_name || "None");
-        setSelectedUniverse(universe || "");
+      const values = filtersForClass.reduce((acc, filter) => {
+        filter.options.forEach((option) => {
+          if (option.property) {
+            acc[option.property] = ""; // Initialize with empty value
+          }
+        });
+        return acc;
+      }, {});
 
-        // Update filters based on selected class
-        const filtersForClass = settings.filters.filter(
-          (filter) => filter.class === class_name
-        );
-        setFilters(filtersForClass.length ? filtersForClass : []);
-
-        // Initialize values based on filters
-        const values = filtersForClass.reduce((acc, filter) => {
-          filter.options.forEach((option) => {
-            if (option.property) {
-              acc[option.property] = ""; // Initialize with empty value
-            }
-          });
-          return acc;
-        }, {});
-        setInitialValues(values);
-      }
+      // Initialize class and universe
+      setSelectedClass(class_name || "None");
+      setSelectedUniverse(universe || "");
+      setInitialValues(values);
     };
 
     initializeForm();
@@ -144,7 +123,7 @@ const Form = (props) => {
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
     setStrategyName(name);
-    onStrategyNameChange(e); // Call parent component function
+    onStrategyNameChange(e);
   };
 
   const onClassInput = (e) => {
@@ -152,7 +131,6 @@ const Form = (props) => {
     setSelectedClass(selected);
 
     if (selected === "None") {
-      // If "None" is selected, clear the filters
       setFilters([]);
       setInitialValues({});
     } else {
@@ -161,7 +139,6 @@ const Form = (props) => {
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
 
-      // Initialize values based on filters
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
