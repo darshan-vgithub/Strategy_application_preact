@@ -4,7 +4,7 @@ import {
   useEffect,
 } from "https://esm.sh/htm/preact/standalone";
 
-// Settings configuration (unchanged)
+// Sample settings data
 const settings = {
   classes: ["CruiseMomentum", "None"],
   universes: [
@@ -58,41 +58,14 @@ const settings = {
   ],
 };
 
-const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
-  return html`
-    <div>
-      ${strategyFilters.map((f) => {
-        const filter = settings.filters.filter((o) => o.class === f.filter)[0];
-        return html`<div
-          key=${filter.label}
-          class="filter-group"
-          style=${filterGroupStyle}
-        >
-          <h4 style=${filterTitleStyle}>${filter.label}</h4>
-          ${filter.options.map(
-            (option) =>
-              html`<div class="form-group" style=${filterOptionStyle}>
-                <label for=${option.property} style=${filterOptionLabelStyle}>
-                  ${option.label}:
-                </label>
-                <input
-                  type=${option.type === "number" ? "number" : "text"}
-                  id=${option.property}
-                  name=${option.property}
-                  class="form-input"
-                  style=${inputStyle}
-                  value=${initialValues[option.property] || ""}
-                  onInput=${(e) => onInputChange(e.target.name, e.target.value)}
-                />
-              </div>`
-          )}
-        </div>`;
-      })}
-    </div>
-  `;
+// Sample JSON data for strategies
+const fetchStrategiesData = async () => {
+  // Replace this with the actual path to your JSON file
+  const response = await fetch("/largecap_strategy/strategies.json");
+  const data = await response.json();
+  return data;
 };
 
-// Form Component
 const Form = (props) => {
   const { strategy, class_name, universe, filters, onStrategyNameChange } =
     props;
@@ -101,61 +74,72 @@ const Form = (props) => {
   const [strategyFilters, setFilters] = useState([]);
   const [strategyName, setStrategyName] = useState(strategy);
   const [initialValues, setInitialValues] = useState({});
+  const [strategiesData, setStrategiesData] = useState({});
 
   useEffect(() => {
-    console.log("Class/Universe/Filters changed:", {
-      class_name,
-      filters,
-      universe,
-    });
+    const initializeForm = async () => {
+      const data = await fetchStrategiesData();
+      setStrategiesData(data);
 
-    if (filters && filters.length > 0) {
-      // Set filters based on props
-      const filtersForClass = filters;
-      setFilters(filtersForClass);
+      if (filters && filters.length > 0) {
+        // Set filters based on props
+        const filtersForClass = filters;
+        setFilters(filtersForClass);
 
-      // Initialize values based on filters
-      const values = filtersForClass.reduce((acc, filter) => {
-        filter.options.forEach((option) => {
-          if (option.property) {
-            acc[option.property] = ""; // Initialize with empty value
-          }
-        });
-        return acc;
-      }, {});
-      setInitialValues(values);
+        // Initialize values based on filters
+        const values = filtersForClass.reduce((acc, filter) => {
+          filter.options.forEach((option) => {
+            if (option.property) {
+              acc[option.property] = ""; // Initialize with empty value
+            }
+          });
+          return acc;
+        }, {});
+        setInitialValues(values);
 
-      // Debugging: Log initialized values
-      console.log("Initial Values:", values);
+        // Handle class and universe
+        setSelectedClass(class_name || "None");
+        setSelectedUniverse(universe || "");
+      } else {
+        setSelectedClass(class_name || "None");
+        setSelectedUniverse(universe || "");
 
-      // Handle class and universe
-      setSelectedClass(class_name || "None");
-      setSelectedUniverse(universe || "");
-    } else {
-      setSelectedClass(class_name || "None");
-      setSelectedUniverse(universe || "");
+        // Update filters based on selected class
+        const filtersForClass = settings.filters.filter(
+          (filter) => filter.class === class_name
+        );
+        setFilters(filtersForClass.length ? filtersForClass : []);
 
-      // Update filters based on selected class
-      const filtersForClass = settings.filters.filter(
-        (filter) => filter.class === class_name
-      );
-      setFilters(filtersForClass.length ? filtersForClass : []);
+        // Initialize values based on filters
+        const values = filtersForClass.reduce((acc, filter) => {
+          filter.options.forEach((option) => {
+            if (option.property) {
+              acc[option.property] = ""; // Initialize with empty value
+            }
+          });
+          return acc;
+        }, {});
+        setInitialValues(values);
+      }
+    };
 
-      // Initialize values based on filters
-      const values = filtersForClass.reduce((acc, filter) => {
-        filter.options.forEach((option) => {
-          if (option.property) {
-            acc[option.property] = ""; // Initialize with empty value
-          }
-        });
-        return acc;
-      }, {});
-      setInitialValues(values);
-
-      // Debugging: Log initialized values
-      console.log("Initial Values:", values);
-    }
+    initializeForm();
   }, [class_name, universe, filters]);
+
+  useEffect(() => {
+    if (strategyName && strategiesData[strategyName]) {
+      const strategyData = strategiesData[strategyName];
+      const updatedValues = { ...initialValues };
+
+      strategyData.filters.forEach((filter) => {
+        if (filter.property in updatedValues) {
+          updatedValues[filter.property] = filter.value;
+        }
+      });
+
+      setInitialValues(updatedValues);
+    }
+  }, [strategyName, strategiesData]);
 
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
@@ -201,6 +185,143 @@ const Form = (props) => {
     }));
   };
 
+  // Inner FilterOption component
+  const FilterOption = ({ option, value, onInputChange }) => {
+    if (option.type === "calendar") {
+      return html`
+        <div class="form-group" style=${filterOptionStyle}>
+          <label for=${option.property} style=${filterOptionLabelStyle}>
+            ${option.label}:
+          </label>
+          <select
+            id=${option.property}
+            name=${option.property}
+            class="form-select"
+            style=${selectStyle}
+            value=${value || ""}
+            onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+          >
+            <option value="">Select Calendar</option>
+            ${settings.calendars.map(
+              (calendar) =>
+                html` <option value="${calendar}">${calendar}</option> `
+            )}
+          </select>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="form-group" style=${filterOptionStyle}>
+        <label for=${option.property} style=${filterOptionLabelStyle}>
+          ${option.label}:
+        </label>
+        <input
+          type=${option.type === "number" ? "number" : "text"}
+          id=${option.property}
+          name=${option.property}
+          class="form-input"
+          style=${inputStyle}
+          value=${value || ""}
+          onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+        />
+      </div>
+    `;
+  };
+
+  // Inner Filters component
+  const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
+    return html`
+      <div>
+        ${strategyFilters.map((f) => {
+          const filter = settings.filters.find((o) => o.class === f.filter);
+          if (!filter) return null;
+
+          return html`<div
+            key=${filter.label}
+            class="filter-group"
+            style=${filterGroupStyle}
+          >
+            <h4 style=${filterTitleStyle}>${filter.label}</h4>
+            ${filter.options.map(
+              (option) => html`<${FilterOption}
+                option=${option}
+                value=${initialValues[option.property]}
+                onInputChange=${onInputChange}
+              />`
+            )}
+          </div>`;
+        })}
+      </div>
+    `;
+  };
+
+  // Styles
+  const filterOptionStyle = {
+    marginBottom: "10px",
+  };
+
+  const filterOptionLabelStyle = {
+    display: "block",
+    marginBottom: "5px",
+    fontWeight: "bold",
+    color: "#555",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px",
+    fontSize: "16px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+  };
+
+  const selectStyle = {
+    width: "100%",
+    padding: "10px",
+    fontSize: "16px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+  };
+
+  const filterGroupStyle = {
+    marginBottom: "20px",
+  };
+
+  const filterTitleStyle = {
+    marginBottom: "10px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#444",
+  };
+
+  const formStyle = {
+    maxWidth: "600px",
+    margin: "0 auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+  };
+
+  const formGroupStyle = {
+    marginBottom: "20px",
+  };
+
+  const titleStyle = {
+    textAlign: "center",
+    marginBottom: "20px",
+    fontSize: "24px",
+    fontWeight: "bold",
+  };
+
+  const labelStyle = {
+    display: "block",
+    marginBottom: "5px",
+    fontWeight: "bold",
+    color: "#555",
+  };
+
   return html`
     <form id="strategyForm" style=${formStyle}>
       <h1 style=${titleStyle}>Strategy Form</h1>
@@ -213,7 +334,7 @@ const Form = (props) => {
           class="form-input"
           placeholder="Enter your strategy"
           value=${strategyName}
-          onChange=${onStrategyNameInput}
+          onInput=${onStrategyNameInput}
           style=${inputStyle}
         />
       </div>
@@ -224,10 +345,10 @@ const Form = (props) => {
           name="universe"
           class="form-select"
           value=${selectedUniverse}
-          onChange=${onUniverseInput}
+          onInput=${onUniverseInput}
           style=${selectStyle}
         >
-          <option>Select Universe</option>
+          <option value="">Select Universe</option>
           ${settings.universes.map(
             (o) => html` <option value="${o}">${o}</option> `
           )}
@@ -240,35 +361,32 @@ const Form = (props) => {
           name="class"
           class="form-select"
           value=${selectedClass}
-          onChange=${onClassInput}
+          onInput=${onClassInput}
           style=${selectStyle}
         >
-          <option>Select Class</option>
+          <option value="">Select Class</option>
           ${settings.classes.map(
             (o) => html` <option value="${o}">${o}</option> `
           )}
         </select>
       </div>
-
-      ${strategyFilters.length > 0 &&
-      html`<${Filters}
+      <${Filters}
         strategyFilters=${strategyFilters}
         initialValues=${initialValues}
         onInputChange=${handleInputChange}
-      />`}
+      />
     </form>
   `;
 };
 
-// Styles (unchanged)
+// Styles
 const formStyle = {
   maxWidth: "600px",
-  margin: "20px auto",
-  padding: "30px",
-  background: "#f9f9f9",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-  fontFamily: "'Arial', sans-serif",
+  margin: "0 auto",
+  padding: "20px",
+  backgroundColor: "#f9f9f9",
+  borderRadius: "8px",
+  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
 };
 
 const titleStyle = {
@@ -305,25 +423,4 @@ const selectStyle = {
   border: "1px solid #ccc",
 };
 
-const filterGroupStyle = {
-  marginBottom: "20px",
-};
-
-const filterTitleStyle = {
-  marginBottom: "10px",
-  fontSize: "18px",
-  fontWeight: "bold",
-  color: "#444",
-};
-
-const filterOptionStyle = {
-  marginBottom: "10px",
-};
-
-const filterOptionLabelStyle = {
-  display: "block",
-  marginBottom: "5px",
-  fontWeight: "bold",
-  color: "#555",
-};
 export { Form };
