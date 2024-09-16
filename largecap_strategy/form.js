@@ -4,7 +4,7 @@ import {
   useEffect,
 } from "https://esm.sh/htm/preact/standalone";
 
-// Settings configuration
+// Settings configuration (unchanged)
 const settings = {
   classes: ["CruiseMomentum", "None"],
   universes: [
@@ -76,12 +76,16 @@ const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
                   <label for=${option.property} style=${filterOptionLabelStyle}>
                     ${option.label}:
                   </label>
-                  <input type=${option.type === "number" ? "number" : "text"}
-                  id=${option.property} name=${option.property}
-                  class="form-input" style=${inputStyle}
-                  value=${initialValues[option.property] || ""}
-                  onInput=${(e) => onInputChange(e.target.name, e.target.value)}
-                  // Handle input change />
+                  <input
+                    type=${option.type === "number" ? "number" : "text"}
+                    id=${option.property}
+                    name=${option.property}
+                    class="form-input"
+                    style=${inputStyle}
+                    value=${initialValues[option.property] || ""}
+                    onInput=${(e) =>
+                      onInputChange(e.target.name, e.target.value)}
+                  />
                 </div>`
             )}
           </div>`
@@ -108,10 +112,7 @@ const Form = (props) => {
     });
 
     if (filters && filters.length > 0) {
-      setSelectedClass(class_name || "None");
-      setSelectedUniverse(universe || "");
-
-      // Update filters based on class_name
+      // Set filters based on props
       const filtersForClass = filters;
       setFilters(filtersForClass);
 
@@ -128,8 +129,12 @@ const Form = (props) => {
 
       // Debugging: Log initialized values
       console.log("Initial Values:", values);
+
+      // Handle class and universe
+      setSelectedClass(class_name || "None");
+      setSelectedUniverse(universe || "");
     } else {
-      setSelectedClass(class_name || "");
+      setSelectedClass(class_name || "None");
       setSelectedUniverse(universe || "");
 
       // Update filters based on selected class
@@ -138,16 +143,19 @@ const Form = (props) => {
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
 
-      // Prefill with JSON data if available
+      // Initialize values based on filters
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
-            acc[option.property] = ""; // Set from data source
+            acc[option.property] = ""; // Initialize with empty value
           }
         });
         return acc;
       }, {});
       setInitialValues(values);
+
+      // Debugging: Log initialized values
+      console.log("Initial Values:", values);
     }
   }, [class_name, universe, filters]);
 
@@ -171,11 +179,11 @@ const Form = (props) => {
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
 
-      // Initialize values based on JSON data if available
+      // Initialize values based on filters
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
-            acc[option.property] = ""; // Set from data source
+            acc[option.property] = ""; // Initialize with empty value
           }
         });
         return acc;
@@ -254,7 +262,7 @@ const Form = (props) => {
   `;
 };
 
-// Styles remain unchanged
+// Styles (unchanged)
 const formStyle = {
   maxWidth: "600px",
   margin: "20px auto",
@@ -286,15 +294,17 @@ const labelStyle = {
 const inputStyle = {
   width: "100%",
   padding: "10px",
-  borderRadius: "5px",
-  border: "1px solid #ddd",
+  fontSize: "16px",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
 };
 
 const selectStyle = {
   width: "100%",
   padding: "10px",
-  borderRadius: "5px",
-  border: "1px solid #ddd",
+  fontSize: "16px",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
 };
 
 const filterGroupStyle = {
@@ -316,7 +326,6 @@ const filterOptionLabelStyle = {
   display: "block",
   marginBottom: "5px",
   fontWeight: "bold",
-  color: "#666",
+  color: "#555",
 };
-
 export { Form };
