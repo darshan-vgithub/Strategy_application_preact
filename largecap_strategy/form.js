@@ -82,7 +82,7 @@ const Form = (props) => {
       setStrategiesData(data);
 
       const filtersForClass =
-        filters && filters.length > 0
+        filters.length > 0
           ? filters
           : settings.filters.filter((filter) => filter.class === class_name);
 
@@ -125,6 +125,7 @@ const Form = (props) => {
 
       console.log("Updated Values:", updatedValues); // Log updated values
 
+      // Ensure all properties from strategyData.filters are set in initialValues
       setInitialValues((prevValues) => ({
         ...prevValues,
         ...updatedValues,
@@ -222,13 +223,15 @@ const Form = (props) => {
 
   // Inner Filters component
   const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
-    console.log("Filters Component:", { strategyFilters, initialValues }); // Log component props
+    console.log("Filters Component:", { initialValues, strategyFilters }); // Log component props
 
     return html`
       <div>
         ${strategyFilters.map((f) => {
           const filter = settings.filters.find((o) => o.class === f.filter);
           if (!filter) return null;
+
+          console.log("Filter:", filter); // Log each filter
 
           return html`<div
             key=${filter.label}
@@ -260,19 +263,23 @@ const Form = (props) => {
   };
 
   const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    fontSize: "16px",
+    padding: "8px",
+    border: "1px solid #ddd",
     borderRadius: "4px",
-    border: "1px solid #ccc",
   };
 
   const selectStyle = {
-    width: "100%",
-    padding: "10px",
-    fontSize: "16px",
+    padding: "8px",
+    border: "1px solid #ddd",
     borderRadius: "4px",
-    border: "1px solid #ccc",
+  };
+
+  const formStyle = {
+    maxWidth: "600px",
+    margin: "auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
   };
 
   const filterGroupStyle = {
@@ -280,19 +287,8 @@ const Form = (props) => {
   };
 
   const filterTitleStyle = {
-    marginBottom: "10px",
     fontSize: "18px",
-    fontWeight: "bold",
-    color: "#444",
-  };
-
-  const formStyle = {
-    maxWidth: "600px",
-    margin: "0 auto",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    backgroundColor: "#f9f9f9",
+    marginBottom: "10px",
   };
 
   return html`
