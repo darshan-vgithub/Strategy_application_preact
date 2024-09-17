@@ -130,6 +130,7 @@ const Form = (props) => {
 
       console.log("Updated Values:", updatedValues);
 
+      // Update initialValues with strategyData
       setInitialValues((prevValues) => ({
         ...prevValues,
         ...updatedValues,
