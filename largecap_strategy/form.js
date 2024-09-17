@@ -87,6 +87,7 @@ const Form = (props) => {
           : settings.filters.filter((filter) => filter.class === class_name);
 
       setFilters(filtersForClass);
+
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
@@ -96,6 +97,7 @@ const Form = (props) => {
         return acc;
       }, {});
 
+      // Initialize class and universe
       setSelectedClass(class_name || "None");
       setSelectedUniverse(universe || "");
       setInitialValues(values);
@@ -113,19 +115,12 @@ const Form = (props) => {
       const updatedValues = {};
 
       strategyData.filters.forEach((filter) => {
-        const filterSettings = settings.filters.find(
-          (f) => f.class === filter.filter
-        );
-        if (filterSettings) {
-          filterSettings.options.forEach((option) => {
-            const value = filter.options.find(
-              (opt) => Object.keys(opt)[0] === option.property
-            );
-            if (value) {
-              updatedValues[option.property] = value[option.property];
-            }
-          });
-        }
+        filter.options.forEach((optionObject) => {
+          const property = Object.keys(optionObject)[0]; // Get property key
+          if (property) {
+            updatedValues[property] = optionObject[property]; // Set value
+          }
+        });
       });
 
       console.log("Updated Values:", updatedValues); // Log updated values
@@ -155,6 +150,7 @@ const Form = (props) => {
         (filter) => filter.class === selected
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
+
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
@@ -178,6 +174,7 @@ const Form = (props) => {
     }));
   };
 
+  // Inner FilterOption component
   const FilterOption = ({ option, value = "", onInputChange }) => {
     console.log("FilterOption Props:", { option, value }); // Log props
 
@@ -223,6 +220,7 @@ const Form = (props) => {
     `;
   };
 
+  // Inner Filters component
   const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
     console.log("Filters Component:", { strategyFilters, initialValues }); // Log component props
 
@@ -297,37 +295,26 @@ const Form = (props) => {
     backgroundColor: "#f9f9f9",
   };
 
-  const formGroupStyle = {
-    marginBottom: "20px",
-  };
-
-  const titleStyle = {
-    textAlign: "center",
-    marginBottom: "20px",
-    fontSize: "24px",
-    fontWeight: "bold",
-  };
-
   return html`
     <div style=${formStyle}>
-      <h2 style=${titleStyle}>Strategy Form</h2>
-      <div style=${formGroupStyle}>
-        <label for="strategyName">Strategy Name:</label>
+      <div class="form-group">
+        <label for="strategy-name">Strategy Name:</label>
         <input
           type="text"
-          id="strategyName"
-          name="strategyName"
+          id="strategy-name"
+          name="strategy-name"
           class="form-input"
           style=${inputStyle}
-          value=${strategyName || ""}
+          value=${strategyName}
           onInput=${onStrategyNameInput}
         />
       </div>
-      <div style=${formGroupStyle}>
-        <label for="class">Class:</label>
+
+      <div class="form-group">
+        <label for="strategy-class">Class:</label>
         <select
-          id="class"
-          name="class"
+          id="strategy-class"
+          name="strategy-class"
           class="form-select"
           style=${selectStyle}
           value=${selectedClass}
@@ -339,18 +326,24 @@ const Form = (props) => {
           )}
         </select>
       </div>
-      <div style=${formGroupStyle}>
-        <label for="universe">Universe:</label>
-        <input
-          type="text"
-          id="universe"
-          name="universe"
-          class="form-input"
-          style=${inputStyle}
-          value=${selectedUniverse || ""}
+
+      <div class="form-group">
+        <label for="strategy-universe">Universe:</label>
+        <select
+          id="strategy-universe"
+          name="strategy-universe"
+          class="form-select"
+          style=${selectStyle}
+          value=${selectedUniverse}
           onInput=${onUniverseInput}
-        />
+        >
+          <option value="">Select Universe</option>
+          ${settings.universes.map(
+            (univ) => html`<option value="${univ}">${univ}</option>`
+          )}
+        </select>
       </div>
+
       <${Filters}
         strategyFilters=${strategyFilters}
         initialValues=${initialValues}
