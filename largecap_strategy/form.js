@@ -199,12 +199,14 @@ const Form = (props) => {
   };
 
   const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
-    console.log("Filters Component Initial Values:", initialValues);
+    console.log("Filters Component Initial Values:", initialValues); // Debugging
     return html`
       <div>
         ${strategyFilters.map((f) => {
           const filter = settings.filters.find((o) => o.class === f.class);
           if (!filter) return null;
+
+          console.log("Filter:", filter);
 
           return html`
             <div
@@ -214,11 +216,9 @@ const Form = (props) => {
             >
               <h4 style=${filterTitleStyle}>${filter.label}</h4>
               ${filter.options.map(
-                (option) => html`<${FilterOption}
-                  option=${option}
-                  value=${initialValues[option.property] || ""}
-                  onInputChange=${onInputChange}
-                />`
+                (option) => html`<${FilterOption} option=${option}
+                value=${initialValues[option.property] || ""} // Ensure correct
+                value onInputChange=${onInputChange} />`
               )}
             </div>
           `;
@@ -245,46 +245,97 @@ const Form = (props) => {
     width: "100%",
   };
 
+  const selectStyle = {
+    padding: "8px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    width: "100%",
+  };
+
   const filterGroupStyle = {
     marginBottom: "20px",
   };
 
   const filterTitleStyle = {
-    fontSize: "18px",
+    fontSize: "16px",
     fontWeight: "bold",
+    marginBottom: "10px",
+    color: "#333",
+  };
+
+  const formContainerStyle = {
+    maxWidth: "600px",
+    margin: "auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+  };
+
+  const formGroupStyle = {
+    marginBottom: "20px",
+  };
+
+  const formLabelStyle = {
+    display: "block",
+    marginBottom: "5px",
+    fontWeight: "bold",
+    color: "#555",
   };
 
   return html`
-    <div>
-      <div class="form-group">
-        <label for="strategyName">Strategy Name:</label>
+    <div class="form-container" style=${formContainerStyle}>
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="strategyName" style=${formLabelStyle}>
+          Strategy Name:
+        </label>
         <input
           type="text"
           id="strategyName"
-          value=${strategyName}
+          name="strategyName"
+          class="form-input"
+          style=${inputStyle}
+          value=${strategyName || ""}
           onInput=${onStrategyNameInput}
         />
       </div>
 
-      <div class="form-group">
-        <label for="classSelect">Select Class:</label>
-        <select id="classSelect" value=${selectedClass} onInput=${onClassInput}>
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="class" style=${formLabelStyle}> Class: </label>
+        <select
+          id="class"
+          name="class"
+          class="form-select"
+          style=${selectStyle}
+          value=${selectedClass || ""}
+          onInput=${onClassInput}
+        >
+          <option value="">Select Class</option>
           ${settings.classes.map(
-            (className) =>
-              html`<option value=${className}>${className}</option>`
+            (cls) =>
+              html`<option value="${cls}" selected=${selectedClass === cls}>
+                ${cls}
+              </option>`
           )}
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="universeSelect">Select Universe:</label>
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="universe" style=${formLabelStyle}> Universe: </label>
         <select
-          id="universeSelect"
-          value=${selectedUniverse}
+          id="universe"
+          name="universe"
+          class="form-select"
+          style=${selectStyle}
+          value=${selectedUniverse || ""}
           onInput=${onUniverseInput}
         >
+          <option value="">Select Universe</option>
           ${settings.universes.map(
-            (universe) => html`<option value=${universe}>${universe}</option>`
+            (uni) =>
+              html`<option value="${uni}" selected=${selectedUniverse === uni}>
+                ${uni}
+              </option>`
           )}
         </select>
       </div>
