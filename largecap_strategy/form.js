@@ -75,7 +75,6 @@ const Form = (props) => {
   const [initialValues, setInitialValues] = useState({});
   const [strategiesData, setStrategiesData] = useState({});
 
-  // Initialize form with strategiesData
   useEffect(() => {
     const initializeForm = async () => {
       const data = await fetchStrategiesData();
@@ -97,7 +96,6 @@ const Form = (props) => {
         return acc;
       }, {});
 
-      // Initialize class and universe
       setSelectedClass(class_name || "None");
       setSelectedUniverse(universe || "");
       setInitialValues(values);
@@ -106,11 +104,10 @@ const Form = (props) => {
     initializeForm();
   }, [class_name, universe, filters]);
 
-  // Prefill values based on strategyName
   useEffect(() => {
     if (strategyName && strategiesData[strategyName]) {
       const strategyData = strategiesData[strategyName];
-      console.log("Strategy Data:", strategyData); // Log strategy data
+      console.log("Strategy Data:", strategyData);
 
       const updatedValues = {};
       const updatedFilters = [];
@@ -123,17 +120,16 @@ const Form = (props) => {
           updatedFilters.push(filterDefinition);
 
           filter.options.forEach((optionObject) => {
-            const property = Object.keys(optionObject)[0]; // Get property key
+            const property = Object.keys(optionObject)[0];
             if (property) {
-              updatedValues[property] = optionObject[property]; // Set value
+              updatedValues[property] = optionObject[property];
             }
           });
         }
       });
 
-      console.log("Updated Values:", updatedValues); // Log updated values
+      console.log("Updated Values:", updatedValues);
 
-      // Ensure all properties from strategyData.filters are set in initialValues
       setInitialValues((prevValues) => ({
         ...prevValues,
         ...updatedValues,
@@ -179,7 +175,7 @@ const Form = (props) => {
   };
 
   const handleInputChange = (name, value) => {
-    console.log(`Handling Input Change - Name: ${name}, Value: ${value}`); // Debugging log
+    console.log(`Handling Input Change - Name: ${name}, Value: ${value}`);
 
     setInitialValues((prevValues) => ({
       ...prevValues,
@@ -187,9 +183,8 @@ const Form = (props) => {
     }));
   };
 
-  // Inner FilterOption component
   const FilterOption = ({ option, value = "", onInputChange }) => {
-    console.log("FilterOption Props:", { option, value }); // Log props
+    console.log("FilterOption Props:", { option, value });
 
     if (option.type === "calendar") {
       return html`
@@ -235,9 +230,8 @@ const Form = (props) => {
     `;
   };
 
-  // Inner Filters component
   const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
-    console.log("Filters Component:", { initialValues, strategyFilters }); // Log component props
+    console.log("Filters Component:", { initialValues, strategyFilters });
 
     return html`
       <div>
@@ -245,7 +239,7 @@ const Form = (props) => {
           const filter = settings.filters.find((o) => o.class === f.class);
           if (!filter) return null;
 
-          console.log("Filter:", filter); // Log each filter
+          console.log("Filter:", filter);
 
           return html`<div
             key=${filter.label}
@@ -254,9 +248,11 @@ const Form = (props) => {
           >
             <h4 style=${filterTitleStyle}>${filter.label}</h4>
             ${filter.options.map(
-              (option) => html`<${FilterOption} option=${option}
-              value=${initialValues[option.property] || ""} // Ensure correct
-              value is passed onInputChange=${onInputChange} />`
+              (option) => html`<${FilterOption}
+                option=${option}
+                value=${initialValues[option.property] || ""}
+                onInputChange=${onInputChange}
+              />`
             )}
           </div>`;
         })}
@@ -264,7 +260,6 @@ const Form = (props) => {
     `;
   };
 
-  // Styles
   const filterOptionStyle = {
     marginBottom: "10px",
   };
@@ -295,53 +290,89 @@ const Form = (props) => {
   };
 
   const filterTitleStyle = {
+    fontSize: "16px",
+    fontWeight: "bold",
     marginBottom: "10px",
-    fontSize: "18px",
-    fontWeight: "600",
+    color: "#333",
+  };
+
+  const formContainerStyle = {
+    maxWidth: "600px",
+    margin: "auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+  };
+
+  const formGroupStyle = {
+    marginBottom: "20px",
+  };
+
+  const formLabelStyle = {
+    display: "block",
+    marginBottom: "5px",
+    fontWeight: "bold",
+    color: "#555",
   };
 
   return html`
-    <div class="form">
-      <div class="form-group">
-        <label for="strategyName">Strategy Name:</label>
+    <div class="form-container" style=${formContainerStyle}>
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="strategyName" style=${formLabelStyle}>
+          Strategy Name:
+        </label>
         <input
-          id="strategyName"
           type="text"
+          id="strategyName"
+          name="strategyName"
           class="form-input"
           style=${inputStyle}
           value=${strategyName || ""}
           onInput=${onStrategyNameInput}
         />
       </div>
-      <div class="form-group">
-        <label for="className">Class:</label>
+
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="class" style=${formLabelStyle}> Class: </label>
         <select
-          id="className"
+          id="class"
+          name="class"
           class="form-select"
           style=${selectStyle}
-          value=${selectedClass}
+          value=${selectedClass || ""}
           onInput=${onClassInput}
         >
-          <option value="None">None</option>
+          <option value="">Select Class</option>
           ${settings.classes.map(
-            (c) => html`<option value="${c}">${c}</option>`
+            (cls) =>
+              html`<option value="${cls}" selected=${selectedClass === cls}>
+                ${cls}
+              </option>`
           )}
         </select>
       </div>
-      <div class="form-group">
-        <label for="universe">Universe:</label>
+
+      <div class="form-group" style=${formGroupStyle}>
+        <label for="universe" style=${formLabelStyle}> Universe: </label>
         <select
           id="universe"
+          name="universe"
           class="form-select"
           style=${selectStyle}
-          value=${selectedUniverse}
+          value=${selectedUniverse || ""}
           onInput=${onUniverseInput}
         >
+          <option value="">Select Universe</option>
           ${settings.universes.map(
-            (u) => html`<option value="${u}">${u}</option>`
+            (uni) =>
+              html`<option value="${uni}" selected=${selectedUniverse === uni}>
+                ${uni}
+              </option>`
           )}
         </select>
       </div>
+
       <${Filters}
         strategyFilters=${strategyFilters}
         initialValues=${initialValues}
