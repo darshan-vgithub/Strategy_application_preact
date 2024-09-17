@@ -87,7 +87,6 @@ const Form = (props) => {
           : settings.filters.filter((filter) => filter.class === class_name);
 
       setFilters(filtersForClass);
-
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
@@ -97,7 +96,6 @@ const Form = (props) => {
         return acc;
       }, {});
 
-      // Initialize class and universe
       setSelectedClass(class_name || "None");
       setSelectedUniverse(universe || "");
       setInitialValues(values);
@@ -115,12 +113,19 @@ const Form = (props) => {
       const updatedValues = {};
 
       strategyData.filters.forEach((filter) => {
-        filter.options.forEach((optionObject) => {
-          const property = Object.keys(optionObject)[0]; // Get property key
-          if (property) {
-            updatedValues[property] = optionObject[property]; // Set value
-          }
-        });
+        const filterSettings = settings.filters.find(
+          (f) => f.class === filter.filter
+        );
+        if (filterSettings) {
+          filterSettings.options.forEach((option) => {
+            const value = filter.options.find(
+              (opt) => Object.keys(opt)[0] === option.property
+            );
+            if (value) {
+              updatedValues[option.property] = value[option.property];
+            }
+          });
+        }
       });
 
       console.log("Updated Values:", updatedValues); // Log updated values
@@ -150,7 +155,6 @@ const Form = (props) => {
         (filter) => filter.class === selected
       );
       setFilters(filtersForClass.length ? filtersForClass : []);
-
       const values = filtersForClass.reduce((acc, filter) => {
         filter.options.forEach((option) => {
           if (option.property) {
@@ -174,7 +178,6 @@ const Form = (props) => {
     }));
   };
 
-  // Inner FilterOption component
   const FilterOption = ({ option, value = "", onInputChange }) => {
     console.log("FilterOption Props:", { option, value }); // Log props
 
@@ -220,7 +223,6 @@ const Form = (props) => {
     `;
   };
 
-  // Inner Filters component
   const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
     console.log("Filters Component:", { strategyFilters, initialValues }); // Log component props
 
@@ -339,19 +341,15 @@ const Form = (props) => {
       </div>
       <div style=${formGroupStyle}>
         <label for="universe">Universe:</label>
-        <select
+        <input
+          type="text"
           id="universe"
           name="universe"
-          class="form-select"
-          style=${selectStyle}
-          value=${selectedUniverse}
+          class="form-input"
+          style=${inputStyle}
+          value=${selectedUniverse || ""}
           onInput=${onUniverseInput}
-        >
-          <option value="">Select Universe</option>
-          ${settings.universes.map(
-            (uni) => html`<option value="${uni}">${uni}</option>`
-          )}
-        </select>
+        />
       </div>
       <${Filters}
         strategyFilters=${strategyFilters}
