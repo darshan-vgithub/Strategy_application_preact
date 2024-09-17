@@ -78,6 +78,7 @@ const Form = (props) => {
   useEffect(() => {
     const initializeForm = async () => {
       const data = await fetchStrategiesData();
+      console.log("Fetched Strategies Data:", data); // Log fetched data
       setStrategiesData(data);
 
       const filtersForClass =
@@ -107,11 +108,11 @@ const Form = (props) => {
   useEffect(() => {
     if (strategyName && strategiesData[strategyName]) {
       const strategyData = strategiesData[strategyName];
+      console.log("Strategy Data for", strategyName, ":", strategyData); // Log strategy data
 
       const updatedValues = {};
       const updatedFilters = [];
 
-      // Iterate over strategy filters and map to settings filters
       strategyData.filters.forEach((filter) => {
         const filterDefinition = settings.filters.find(
           (f) => f.class === filter.filter
@@ -119,19 +120,24 @@ const Form = (props) => {
         if (filterDefinition) {
           updatedFilters.push(filterDefinition);
 
-          // Match each filter option with its corresponding value from strategyData
           filter.options.forEach((optionObject) => {
-            const property = Object.keys(optionObject)[0]; // e.g., "min_market_cap"
-            if (property) {
-              updatedValues[property] = optionObject[property]; // Set value
-            }
+            Object.keys(optionObject).forEach((property) => {
+              if (property) {
+                updatedValues[property] = optionObject[property]; // Set value
+              }
+            });
           });
         }
       });
 
-      // Update both filters and initialValues together
+      console.log("Updated Values:", updatedValues); // Log updated values
+      console.log("Updated Filters:", updatedFilters); // Log updated filters
+
       setFilters(updatedFilters);
-      setInitialValues(updatedValues); // Prefill form with strategy data
+      setInitialValues((prevValues) => ({
+        ...prevValues,
+        ...updatedValues, // Merge new values with existing ones
+      })); // Prefill form with strategy data
     }
   }, [strategyName, strategiesData]);
 
@@ -171,7 +177,7 @@ const Form = (props) => {
   };
 
   const handleInputChange = (name, value) => {
-    console.log(`Handling Input Change - Name: ${name}, Value: ${value}`);
+    console.log(`Handling Input Change - Name: ${name}, Value: ${value}`); // Log input changes
 
     setInitialValues((prevValues) => ({
       ...prevValues,
@@ -180,6 +186,9 @@ const Form = (props) => {
   };
 
   const FilterOption = ({ option, value = "", onInputChange }) => {
+    console.log("FilterOption - Option:", option); // Log option
+    console.log("FilterOption - Value:", value); // Log value
+
     return html`
       <div class="form-group" style=${filterOptionStyle}>
         <label for=${option.property} style=${filterOptionLabelStyle}>
@@ -200,13 +209,14 @@ const Form = (props) => {
 
   const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
     console.log("Filters Component Initial Values:", initialValues); // Debugging
+
     return html`
       <div>
         ${strategyFilters.map((f) => {
           const filter = settings.filters.find((o) => o.class === f.class);
           if (!filter) return null;
 
-          console.log("Filter:", filter);
+          console.log("Filter:", filter); // Log filter
 
           return html`
             <div
