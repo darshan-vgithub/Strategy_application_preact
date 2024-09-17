@@ -37,7 +37,7 @@ const settings = {
       label: "Generic Momentum Filter",
       class: "AbsoluteReturnFilter",
       options: [
-        { label: "Calendar", property: "calendar_name", type: "calendar" },
+        { label: "Calendar", property: "calendar", type: "calendar" },
         { label: "Look up window", property: "lookup_window", type: "number" },
         { label: "Return size", property: "return_size", type: "number" },
       ],
@@ -113,14 +113,22 @@ const Form = (props) => {
       console.log("Strategy Data:", strategyData); // Log strategy data
 
       const updatedValues = {};
+      const updatedFilters = [];
 
       strategyData.filters.forEach((filter) => {
-        filter.options.forEach((optionObject) => {
-          const property = Object.keys(optionObject)[0]; // Get property key
-          if (property) {
-            updatedValues[property] = optionObject[property]; // Set value
-          }
-        });
+        const filterDefinition = settings.filters.find(
+          (f) => f.class === filter.filter
+        );
+        if (filterDefinition) {
+          updatedFilters.push(filterDefinition);
+
+          filter.options.forEach((optionObject) => {
+            const property = Object.keys(optionObject)[0]; // Get property key
+            if (property) {
+              updatedValues[property] = optionObject[property]; // Set value
+            }
+          });
+        }
       });
 
       console.log("Updated Values:", updatedValues); // Log updated values
@@ -130,6 +138,8 @@ const Form = (props) => {
         ...prevValues,
         ...updatedValues,
       }));
+
+      setFilters(updatedFilters);
     }
   }, [strategyName, strategiesData]);
 
@@ -228,7 +238,7 @@ const Form = (props) => {
     return html`
       <div>
         ${strategyFilters.map((f) => {
-          const filter = settings.filters.find((o) => o.class === f.filter);
+          const filter = settings.filters.find((o) => o.class === f.class);
           if (!filter) return null;
 
           console.log("Filter:", filter); // Log each filter
@@ -266,20 +276,14 @@ const Form = (props) => {
     padding: "8px",
     border: "1px solid #ddd",
     borderRadius: "4px",
+    width: "100%",
   };
 
   const selectStyle = {
     padding: "8px",
     border: "1px solid #ddd",
     borderRadius: "4px",
-  };
-
-  const formStyle = {
-    maxWidth: "600px",
-    margin: "auto",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
+    width: "100%",
   };
 
   const filterGroupStyle = {
@@ -287,59 +291,53 @@ const Form = (props) => {
   };
 
   const filterTitleStyle = {
-    fontSize: "18px",
     marginBottom: "10px",
+    fontSize: "18px",
+    fontWeight: "600",
   };
 
   return html`
-    <div style=${formStyle}>
+    <div class="form">
       <div class="form-group">
-        <label for="strategy-name">Strategy Name:</label>
+        <label for="strategyName">Strategy Name:</label>
         <input
+          id="strategyName"
           type="text"
-          id="strategy-name"
-          name="strategy-name"
           class="form-input"
           style=${inputStyle}
-          value=${strategyName}
+          value=${strategyName || ""}
           onInput=${onStrategyNameInput}
         />
       </div>
-
       <div class="form-group">
-        <label for="strategy-class">Class:</label>
+        <label for="className">Class:</label>
         <select
-          id="strategy-class"
-          name="strategy-class"
+          id="className"
           class="form-select"
           style=${selectStyle}
           value=${selectedClass}
           onInput=${onClassInput}
         >
-          <option value="">Select Class</option>
+          <option value="None">None</option>
           ${settings.classes.map(
-            (cls) => html`<option value="${cls}">${cls}</option>`
+            (c) => html`<option value="${c}">${c}</option>`
           )}
         </select>
       </div>
-
       <div class="form-group">
-        <label for="strategy-universe">Universe:</label>
+        <label for="universe">Universe:</label>
         <select
-          id="strategy-universe"
-          name="strategy-universe"
+          id="universe"
           class="form-select"
           style=${selectStyle}
           value=${selectedUniverse}
           onInput=${onUniverseInput}
         >
-          <option value="">Select Universe</option>
           ${settings.universes.map(
-            (univ) => html`<option value="${univ}">${univ}</option>`
+            (u) => html`<option value="${u}">${u}</option>`
           )}
         </select>
       </div>
-
       <${Filters}
         strategyFilters=${strategyFilters}
         initialValues=${initialValues}
