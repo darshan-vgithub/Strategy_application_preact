@@ -189,6 +189,34 @@ const Form = (props) => {
     console.log("FilterOption - Option:", option); // Log option
     console.log("FilterOption - Value:", value); // Log value
 
+    // Render select input for calendar type
+    if (option.type === "calendar") {
+      return html`
+        <div class="form-group" style=${filterOptionStyle}>
+          <label for=${option.property} style=${filterOptionLabelStyle}>
+            ${option.label}:
+          </label>
+          <select
+            id=${option.property}
+            name=${option.property}
+            class="form-select"
+            style=${selectStyle}
+            value=${value || ""}
+            onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+          >
+            <option value="">Select Calendar</option>
+            ${settings.calendars.map(
+              (calendar) =>
+                html`<option value="${calendar}" selected=${value === calendar}>
+                  ${calendar}
+                </option>`
+            )}
+          </select>
+        </div>
+      `;
+    }
+
+    // Render other types of inputs (number, text)
     return html`
       <div class="form-group" style=${filterOptionStyle}>
         <label for=${option.property} style=${filterOptionLabelStyle}>
