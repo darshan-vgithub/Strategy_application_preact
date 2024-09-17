@@ -125,7 +125,10 @@ const Form = (props) => {
 
       console.log("Updated Values:", updatedValues); // Log updated values
 
-      setInitialValues(updatedValues);
+      setInitialValues((prevValues) => ({
+        ...prevValues,
+        ...updatedValues,
+      }));
     }
   }, [strategyName, strategiesData]);
 
@@ -303,67 +306,59 @@ const Form = (props) => {
     fontWeight: "bold",
   };
 
-  const labelStyle = {
-    display: "block",
-    marginBottom: "5px",
-    fontWeight: "bold",
-    color: "#555",
-  };
-
   return html`
-    <form id="strategyForm" style=${formStyle}>
-      <h1 style=${titleStyle}>Strategy Form</h1>
-
-      <div class="form-group" style=${formGroupStyle}>
-        <label for="strategy_name" style=${labelStyle}>Strategy Name:</label>
+    <div style=${formStyle}>
+      <h2 style=${titleStyle}>Strategy Form</h2>
+      <div style=${formGroupStyle}>
+        <label for="strategyName">Strategy Name:</label>
         <input
           type="text"
-          id="strategy_name"
+          id="strategyName"
+          name="strategyName"
           class="form-input"
-          value=${strategyName}
-          onInput=${onStrategyNameInput}
           style=${inputStyle}
+          value=${strategyName || ""}
+          onInput=${onStrategyNameInput}
         />
       </div>
-
-      <div class="form-group" style=${formGroupStyle}>
-        <label for="class" style=${labelStyle}>Class:</label>
+      <div style=${formGroupStyle}>
+        <label for="class">Class:</label>
         <select
           id="class"
+          name="class"
           class="form-select"
+          style=${selectStyle}
           value=${selectedClass}
           onInput=${onClassInput}
-          style=${selectStyle}
         >
+          <option value="">Select Class</option>
           ${settings.classes.map(
             (cls) => html`<option value="${cls}">${cls}</option>`
           )}
         </select>
       </div>
-
-      <div class="form-group" style=${formGroupStyle}>
-        <label for="universe" style=${labelStyle}>Universe:</label>
+      <div style=${formGroupStyle}>
+        <label for="universe">Universe:</label>
         <select
           id="universe"
+          name="universe"
           class="form-select"
+          style=${selectStyle}
           value=${selectedUniverse}
           onInput=${onUniverseInput}
-          style=${selectStyle}
         >
+          <option value="">Select Universe</option>
           ${settings.universes.map(
-            (universe) => html`
-              <option value="${universe}">${universe}</option>
-            `
+            (uni) => html`<option value="${uni}">${uni}</option>`
           )}
         </select>
       </div>
-
       <${Filters}
         strategyFilters=${strategyFilters}
         initialValues=${initialValues}
         onInputChange=${handleInputChange}
       />
-    </form>
+    </div>
   `;
 };
 
