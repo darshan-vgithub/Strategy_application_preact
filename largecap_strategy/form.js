@@ -179,6 +179,8 @@ const Form = (props) => {
   };
 
   const handleInputChange = (name, value) => {
+    console.log(`Handling Input Change - Name: ${name}, Value: ${value}`); // Debugging log
+
     setInitialValues((prevValues) => ({
       ...prevValues,
       [name]: value,
@@ -200,13 +202,15 @@ const Form = (props) => {
             name=${option.property}
             class="form-select"
             style=${selectStyle}
-            value=${value}
+            value=${value || ""}
             onInput=${(e) => onInputChange(e.target.name, e.target.value)}
           >
             <option value="">Select Calendar</option>
             ${settings.calendars.map(
               (calendar) =>
-                html`<option value="${calendar}">${calendar}</option>`
+                html`<option value="${calendar}" selected=${value === calendar}>
+                  ${calendar}
+                </option>`
             )}
           </select>
         </div>
@@ -224,7 +228,7 @@ const Form = (props) => {
           name=${option.property}
           class="form-input"
           style=${inputStyle}
-          value=${value}
+          value=${value || ""}
           onInput=${(e) => onInputChange(e.target.name, e.target.value)}
         />
       </div>
