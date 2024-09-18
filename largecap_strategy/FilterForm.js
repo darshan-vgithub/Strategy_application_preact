@@ -263,7 +263,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
         onClick=${() => handleDelete(form.id)}
         style="background-color: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 20px;"
       >
-        Delete Filter
+        <i class="fa-solid fa-trash"></i>
       </button>
     </div>
   `;
