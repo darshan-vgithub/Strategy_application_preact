@@ -245,7 +245,7 @@ const Form = (props) => {
     console.log("Filters Component Initial Values:", initialValues); // Debugging
 
     return html`
-      <div>
+      <div class="filters-container">
         ${strategyFilters.map((f) => {
           const filter = settings.filters.find((o) => o.class === f.class);
           if (!filter) return null;
@@ -271,44 +271,60 @@ const Form = (props) => {
     `;
   };
 
+  const formContainerStyle = {
+    maxWidth: "800px",
+    margin: "0 auto",
+    padding: "20px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "#fff",
+  };
+
+  const formGroupStyle = {
+    marginBottom: "16px",
+  };
+
   const filterOptionStyle = {
-    marginBottom: "10px",
+    marginBottom: "12px",
   };
 
   const filterOptionLabelStyle = {
     display: "block",
-    marginBottom: "5px",
+    marginBottom: "6px",
     fontWeight: "bold",
     color: "#333",
   };
 
   const selectStyle = {
     width: "100%",
-    padding: "8px",
+    padding: "10px",
     border: "1px solid #ddd",
     borderRadius: "4px",
+    fontSize: "16px",
   };
 
   const inputStyle = {
     width: "100%",
-    padding: "8px",
+    padding: "10px",
     border: "1px solid #ddd",
     borderRadius: "4px",
+    fontSize: "16px",
   };
 
   const filterGroupStyle = {
-    marginBottom: "20px",
+    marginBottom: "24px",
   };
 
   const filterTitleStyle = {
-    fontSize: "16px",
-    fontWeight: "bold",
+    fontSize: "18px",
+    fontWeight: "600",
     color: "#333",
+    marginBottom: "12px",
   };
 
   return html`
-    <div class="form-container">
-      <div class="form-group">
+    <div class="form-container" style=${formContainerStyle}>
+      <div class="form-group" style=${formGroupStyle}>
         <label for="strategyName" style=${filterOptionLabelStyle}>
           Strategy Name:
         </label>
@@ -323,7 +339,7 @@ const Form = (props) => {
         />
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style=${formGroupStyle}>
         <label for="class_name" style=${filterOptionLabelStyle}>
           Strategy Class:
         </label>
@@ -348,7 +364,7 @@ const Form = (props) => {
         </select>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style=${formGroupStyle}>
         <label for="universe" style=${filterOptionLabelStyle}>
           Universe:
         </label>

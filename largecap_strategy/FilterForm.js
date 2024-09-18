@@ -8,23 +8,69 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
     setSelectedFilter(e.target.value);
   };
 
+  // Styles
+  const formContainerStyle = {
+    maxWidth: "800px",
+    margin: "0 auto",
+    padding: "20px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "#fff",
+  };
+
+  const formGroupStyle = {
+    marginBottom: "16px",
+  };
+
+  const filterOptionStyle = {
+    marginBottom: "12px",
+  };
+
+  const filterOptionLabelStyle = {
+    display: "block",
+    marginBottom: "6px",
+    fontWeight: "bold",
+    color: "#333",
+  };
+
+  const selectStyle = {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "16px",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "16px",
+  };
+
+  const filterGroupStyle = {
+    marginBottom: "24px",
+  };
+
+  const filterTitleStyle = {
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: "12px",
+  };
+
   return html`
-    <div
-      key=${form.id}
-      style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"
-    >
-      <div class="form-group" style="margin-bottom: 10px;">
-        <label
-          for="filter_type_${form.id}"
-          style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
-        >
+    <div style=${formContainerStyle}>
+      <div style=${formGroupStyle}>
+        <label for="filter_type_${form.id}" style=${filterOptionLabelStyle}>
           Select Filter:
         </label>
         <select
           id="filter_type_${form.id}"
           name="filter_type"
           class="form-select"
-          style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+          style=${selectStyle}
           onChange=${handleFilterSelect}
         >
           <option value="">Select Filter</option>
@@ -36,16 +82,12 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
 
       ${selectedFilter === "market_cap" &&
       html`
-        <div class="filter-group" style="margin-bottom: 20px;">
-          <h4
-            style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: rgb(51, 51, 51);"
-          >
-            Market Cap Filter
-          </h4>
-          <div class="form-group" style="margin-bottom: 10px;">
+        <div style=${filterGroupStyle}>
+          <h4 style=${filterTitleStyle}>Market Cap Filter</h4>
+          <div style=${formGroupStyle}>
             <label
               for="min_market_cap_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Minimum Cap:
             </label>
@@ -54,7 +96,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="min_market_cap_${form.id}"
               name="min_market_cap"
               class="form-input"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${inputStyle}
               value=${form.filter.min_market_cap || ""}
               onInput=${(e) =>
                 handleFilterInputChange(
@@ -68,16 +110,12 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
       `}
       ${selectedFilter === "generic_momentum" &&
       html`
-        <div class="filter-group" style="margin-bottom: 20px;">
-          <h4
-            style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: rgb(51, 51, 51);"
-          >
-            Generic Momentum Filter
-          </h4>
-          <div class="form-group" style="margin-bottom: 10px;">
+        <div style=${filterGroupStyle}>
+          <h4 style=${filterTitleStyle}>Generic Momentum Filter</h4>
+          <div style=${formGroupStyle}>
             <label
               for="calendar_generic_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Calendar:
             </label>
@@ -85,7 +123,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="calendar_generic_${form.id}"
               name="calendar_generic"
               class="form-select"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${selectStyle}
               value=${form.filter.calendar_generic || ""}
               onChange=${(e) =>
                 handleFilterInputChange(
@@ -99,10 +137,10 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               <option value="BCME">BCME</option>
             </select>
           </div>
-          <div class="form-group" style="margin-bottom: 10px;">
+          <div style=${formGroupStyle}>
             <label
               for="lookup_window_generic_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Look up window:
             </label>
@@ -111,7 +149,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="lookup_window_generic_${form.id}"
               name="lookup_window_generic"
               class="form-input"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${inputStyle}
               value=${form.filter.lookup_window_generic || ""}
               onInput=${(e) =>
                 handleFilterInputChange(
@@ -121,10 +159,10 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
                 )}
             />
           </div>
-          <div class="form-group" style="margin-bottom: 10px;">
+          <div style=${formGroupStyle}>
             <label
               for="return_size_generic_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Return Size:
             </label>
@@ -133,7 +171,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="return_size_generic_${form.id}"
               name="return_size_generic"
               class="form-input"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${inputStyle}
               value=${form.filter.return_size_generic || ""}
               onInput=${(e) =>
                 handleFilterInputChange(
@@ -147,16 +185,12 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
       `}
       ${selectedFilter === "positive_movement" &&
       html`
-        <div class="filter-group" style="margin-bottom: 20px;">
-          <h4
-            style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: rgb(51, 51, 51);"
-          >
-            Positive Movement Filter
-          </h4>
-          <div class="form-group" style="margin-bottom: 10px;">
+        <div style=${filterGroupStyle}>
+          <h4 style=${filterTitleStyle}>Positive Movement Filter</h4>
+          <div style=${formGroupStyle}>
             <label
               for="calendar_positive_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Calendar:
             </label>
@@ -164,7 +198,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="calendar_positive_${form.id}"
               name="calendar_positive"
               class="form-select"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${selectStyle}
               value=${form.filter.calendar_positive || ""}
               onChange=${(e) =>
                 handleFilterInputChange(
@@ -178,10 +212,10 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               <option value="BCME">BCME</option>
             </select>
           </div>
-          <div class="form-group" style="margin-bottom: 10px;">
+          <div style=${formGroupStyle}>
             <label
               for="lookup_window_positive_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Look up window:
             </label>
@@ -190,7 +224,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="lookup_window_positive_${form.id}"
               name="lookup_window_positive"
               class="form-input"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${inputStyle}
               value=${form.filter.lookup_window_positive || ""}
               onInput=${(e) =>
                 handleFilterInputChange(
@@ -200,10 +234,10 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
                 )}
             />
           </div>
-          <div class="form-group" style="margin-bottom: 10px;">
+          <div style=${formGroupStyle}>
             <label
               for="positive_return_size_${form.id}"
-              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+              style=${filterOptionLabelStyle}
             >
               Positive Return Size:
             </label>
@@ -212,7 +246,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               id="positive_return_size_${form.id}"
               name="positive_return_size"
               class="form-input"
-              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              style=${inputStyle}
               value=${form.filter.positive_return_size || ""}
               onInput=${(e) =>
                 handleFilterInputChange(
@@ -227,7 +261,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
 
       <button
         onClick=${() => handleDelete(form.id)}
-        style="background-color: #d9534f; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;"
+        style="background-color: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 20px;"
       >
         Delete Filter
       </button>
