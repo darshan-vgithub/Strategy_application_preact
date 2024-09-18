@@ -15,9 +15,9 @@
       } from "https://esm.sh/htm/preact/standalone";
       import { Form } from "./form.js";
       import { AddFilterButton } from "./AddFilterButton.js";
-      import { FilterForm } from "./FilterForm.js"; // Import the new component
+      import { FilterForm } from "./FilterForm.js";
+      import { Toast } from "./Toast.js"; // Import the Toast component
 
-      // Example strategy data, replace with actual data or state
       const strategies = {
         "Example Strategy": {
           class: "ExampleClass",
@@ -35,6 +35,8 @@
         });
         const [availableFilters, setAvailableFilters] = useState([]);
         const [filterForms, setFilterForms] = useState([]);
+        const [toastMessage, setToastMessage] = useState("");
+        const [toastType, setToastType] = useState("success"); // 'success' or 'error'
 
         const handleStrategyNameChange = (e) => {
           const name = e.target.value.trim(); // Trim to avoid unwanted spaces
@@ -60,6 +62,10 @@
             ...prevForms,
             { id: Date.now(), filter: {} }, // Create a unique id and an empty filter object
           ]);
+          // Show success toast
+          setToastMessage("Filter added successfully!");
+          setToastType("success");
+          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
         };
 
         const handleFilterInputChange = (id, property, value) => {
@@ -76,6 +82,10 @@
           setFilterForms((prevForms) =>
             prevForms.filter((form) => form.id !== id)
           );
+          // Show success toast
+          setToastMessage("Filter deleted successfully!");
+          setToastType("error");
+          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
         };
 
         return html`
@@ -98,6 +108,7 @@
               `
             )}
           </div>
+          <${Toast} message=${toastMessage} type=${toastType} />
         `;
       }
 
