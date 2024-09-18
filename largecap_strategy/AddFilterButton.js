@@ -1,13 +1,25 @@
 import { html } from "https://esm.sh/htm/preact/standalone";
+const buttonStyle = {
+  marginTop: "20px",
+  marginBottom: "20px",
+  padding: "10px 20px",
+  fontSize: "16px",
+  color: "#fff",
+  backgroundColor: "#007bff",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+  fontWeight: "600",
+  display: "block",
+  marginLeft: "auto",
+  marginRight: "auto",
+  textAlign: "center",
+  textDecoration: "none",
+};
 
 const AddFilterButton = ({ onClick }) => {
   return html`
-    <button
-      onClick=${onClick}
-      style="margin-top: 20px; padding: 10px; font-size: 16px; color: white; background-color: #007bff; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;"
-    >
-      Add Filter
-    </button>
+    <button onClick=${onClick} style=${buttonStyle}>Add Filter</button>
   `;
 };
 
