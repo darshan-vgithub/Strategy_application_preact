@@ -1,4 +1,5 @@
 import { html } from "https://esm.sh/htm/preact/standalone";
+
 const AddFilterButton = ({ availableFilters, onAddFilter }) => {
   const handleAddFilter = () => {
     if (availableFilters.length > 0) {
@@ -14,5 +15,4 @@ const AddFilterButton = ({ availableFilters, onAddFilter }) => {
   `;
 };
 
-// Export the component using named export
 export { AddFilterButton };

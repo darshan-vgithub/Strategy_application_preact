@@ -8,9 +8,11 @@
   </head>
   <body>
     <script type="module">
-      import { html, render, useState } from "https://esm.sh/htm/preact/standalone";
+        import { html, render, useState } from "https://esm.sh/htm/preact/standalone";
       import { Form } from "./form.js";
       import strategies from "./strategies.json" with { type: "json" };
+      import { AddFilterButton } from "./AddFilterButton.js";
+      import { FilterForm } from "./FilterForm.js"; // Import the FilterForm component
 
       function App() {
         const [strategyName, setStrategyName] = useState("");
@@ -19,27 +21,36 @@
           filters: [],
           universe: ""
         });
+        const [availableFilters, setAvailableFilters] = useState([]);
+        const [showFilterForm, setShowFilterForm] = useState(false); // State to control the visibility of the filter form
+        const [currentFilter, setCurrentFilter] = useState(null); // Store current filter data
 
         const handleStrategyNameChange = (e) => {
-          const name = e.target.value.trim(); // Trim to avoid unwanted spaces
+          const name = e.target.value.trim();
           setStrategyName(name);
 
-          console.log("Entered Strategy Name:", name);
-
-          // Check if the strategy exists in the data
           if (strategies[name]) {
-            console.log("Found Strategy:", strategies[name]);
-
             setStrategyData({
-              class: strategies[name].class || "", // Use default empty string if not found
-              filters: strategies[name].filters || [], // Default to an empty array
+              class: strategies[name].class || "",
+              filters: strategies[name].filters || [],
               universe: strategies[name].universe || ""
             });
+            setAvailableFilters(strategies[name].filters || []);
           } else {
-            console.log("Strategy not found in JSON");
-            // Clear data if strategy not found
             setStrategyData({ class: "", filters: [], universe: "" });
+            setAvailableFilters([]);
           }
+        };
+
+        const handleAddFilter = (filter) => {
+          setCurrentFilter(filter);
+          setShowFilterForm(!showFilterForm); // Show filter form when adding a new filter
+        };
+
+        const handleFilterFormSubmit = (filterData) => {
+          console.log("New Filter Data:", filterData);
+          // Handle the filter data (e.g., add to form, save, etc.)
+          setShowFilterForm(false); // Hide filter form after submission
         };
 
         return html`
@@ -50,6 +61,17 @@
             filters=${strategyData.filters || []}
             onStrategyNameChange=${handleStrategyNameChange}
           />
+          <${AddFilterButton}
+            availableFilters=${availableFilters}
+            onAddFilter=${handleAddFilter}
+          />
+          ${showFilterForm && html`
+            <${FilterForm}
+              filter=${currentFilter}
+              onSubmit=${handleFilterFormSubmit}
+              onCancel=${() => setShowFilterForm(false)}
+            />
+          `}
         `;
       }
 
