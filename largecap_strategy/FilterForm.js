@@ -1,6 +1,6 @@
 import { html } from "https://esm.sh/htm/preact/standalone";
 
-export function FilterForm({ form, handleFilterInputChange }) {
+export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
   return html`
     <div
       key=${form.id}
@@ -167,6 +167,12 @@ export function FilterForm({ form, handleFilterInputChange }) {
           />
         </div>
       </div>
+      <button
+        onClick=${() => handleDelete(form.id)}
+        style="background-color: #d9534f; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;"
+      >
+        Delete Filter
+      </button>
     </div>
   `;
 }

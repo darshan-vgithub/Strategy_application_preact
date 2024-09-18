@@ -72,6 +72,12 @@
           );
         };
 
+        const handleDeleteFilter = (id) => {
+          setFilterForms((prevForms) =>
+            prevForms.filter((form) => form.id !== id)
+          );
+        };
+
         return html`
           <${Form}
             strategy=${strategyName}
@@ -87,6 +93,7 @@
                 <${FilterForm}
                   form=${form}
                   handleFilterInputChange=${handleFilterInputChange}
+                  handleDelete=${handleDeleteFilter}
                 />
               `
             )}
