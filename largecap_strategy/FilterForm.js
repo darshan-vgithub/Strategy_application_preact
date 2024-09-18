@@ -121,6 +121,28 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
                 )}
             />
           </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label
+              for="return_size_generic_${form.id}"
+              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+            >
+              Return Size:
+            </label>
+            <input
+              type="number"
+              id="return_size_generic_${form.id}"
+              name="return_size_generic"
+              class="form-input"
+              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              value=${form.filter.return_size_generic || ""}
+              onInput=${(e) =>
+                handleFilterInputChange(
+                  form.id,
+                  "return_size_generic",
+                  e.target.value
+                )}
+            />
+          </div>
         </div>
       `}
       ${selectedFilter === "positive_movement" &&
@@ -174,6 +196,28 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
                 handleFilterInputChange(
                   form.id,
                   "lookup_window_positive",
+                  e.target.value
+                )}
+            />
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label
+              for="positive_return_size_${form.id}"
+              style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+            >
+              Positive Return Size:
+            </label>
+            <input
+              type="number"
+              id="positive_return_size_${form.id}"
+              name="positive_return_size"
+              class="form-input"
+              style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+              value=${form.filter.positive_return_size || ""}
+              onInput=${(e) =>
+                handleFilterInputChange(
+                  form.id,
+                  "positive_return_size",
                   e.target.value
                 )}
             />
