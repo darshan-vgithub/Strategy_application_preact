@@ -8,32 +8,34 @@
   </head>
   <body>
     <script type="module">
-        import { html, render, useState } from "https://esm.sh/htm/preact/standalone";
+      import {
+        html,
+        render,
+        useState,
+      } from "https://esm.sh/htm/preact/standalone";
       import { Form } from "./form.js";
-      import strategies from "./strategies.json" with { type: "json" };
       import { AddFilterButton } from "./AddFilterButton.js";
-      import { FilterForm } from "./FilterForm.js"; // Import the FilterForm component
 
       function App() {
         const [strategyName, setStrategyName] = useState("");
         const [strategyData, setStrategyData] = useState({
           class: "",
           filters: [],
-          universe: ""
+          universe: "",
         });
         const [availableFilters, setAvailableFilters] = useState([]);
-        const [showFilterForm, setShowFilterForm] = useState(false); // State to control the visibility of the filter form
-        const [currentFilter, setCurrentFilter] = useState(null); // Store current filter data
+        const [filterForms, setFilterForms] = useState([]);
 
         const handleStrategyNameChange = (e) => {
-          const name = e.target.value.trim();
+          const name = e.target.value.trim(); // Trim to avoid unwanted spaces
           setStrategyName(name);
 
+          // Fetch and set strategy data
           if (strategies[name]) {
             setStrategyData({
               class: strategies[name].class || "",
               filters: strategies[name].filters || [],
-              universe: strategies[name].universe || ""
+              universe: strategies[name].universe || "",
             });
             setAvailableFilters(strategies[name].filters || []);
           } else {
@@ -42,15 +44,22 @@
           }
         };
 
-        const handleAddFilter = (filter) => {
-          setCurrentFilter(filter);
-          setShowFilterForm(!showFilterForm); // Show filter form when adding a new filter
+        const handleAddFilter = () => {
+          // Add a new filter form to the list
+          setFilterForms((prevForms) => [
+            ...prevForms,
+            { id: Date.now(), filter: {} }, // Create a unique id and an empty filter object
+          ]);
         };
 
-        const handleFilterFormSubmit = (filterData) => {
-          console.log("New Filter Data:", filterData);
-          // Handle the filter data (e.g., add to form, save, etc.)
-          setShowFilterForm(false); // Hide filter form after submission
+        const handleFilterInputChange = (id, property, value) => {
+          setFilterForms((prevForms) =>
+            prevForms.map((form) =>
+              form.id === id
+                ? { ...form, filter: { ...form.filter, [property]: value } }
+                : form
+            )
+          );
         };
 
         return html`
@@ -61,17 +70,144 @@
             filters=${strategyData.filters || []}
             onStrategyNameChange=${handleStrategyNameChange}
           />
-          <${AddFilterButton}
-            availableFilters=${availableFilters}
-            onAddFilter=${handleAddFilter}
-          />
-          ${showFilterForm && html`
-            <${FilterForm}
-              filter=${currentFilter}
-              onSubmit=${handleFilterFormSubmit}
-              onCancel=${() => setShowFilterForm(false)}
-            />
-          `}
+          <${AddFilterButton} onClick=${handleAddFilter} />
+      <div>
+        ${filterForms.map(
+          (form) => html`
+            <div
+              key=${form.id}
+              style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"
+            >
+              <div class="filter-group" style="margin-bottom: 20px;">
+                <h4
+                  style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: rgb(51, 51, 51);"
+                >
+                  Market Cap Filter
+                </h4>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="min_market_cap_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Minimum Cap:</label
+                  >
+                  <input
+                    type="number"
+                    id="min_market_cap_${form.id}"
+                    name="min_market_cap"
+                    class="form-input"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  />
+                </div>
+              </div>
+              <div class="filter-group" style="margin-bottom: 20px;">
+                <h4
+                  style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: rgb(51, 51, 51);"
+                >
+                  Generic Momentum Filter
+                </h4>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="calendar_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Calendar:</label
+                  >
+                  <select
+                    id="calendar_${form.id}"
+                    name="calendar"
+                    class="form-select"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  >
+                    <option value="">Select Calendar</option>
+                    <option value="XNSE">XNSE</option>
+                    <option value="BCME">BCME</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="lookup_window_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Look up window:</label
+                  >
+                  <input
+                    type="number"
+                    id="lookup_window_${form.id}"
+                    name="lookup_window"
+                    class="form-input"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="return_size_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Return size:</label
+                  >
+                  <input
+                    type="number"
+                    id="return_size_${form.id}"
+                    name="return_size"
+                    class="form-input"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  />
+                </div>
+              </div>
+              <div class="filter-group" style="margin-bottom: 20px;">
+                <h4
+                  style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: rgb(51, 51, 51);"
+                >
+                  Positive Movement Filter
+                </h4>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="calendar_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Calendar:</label
+                  >
+                  <select
+                    id="calendar_${form.id}"
+                    name="calendar"
+                    class="form-select"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  >
+                    <option value="">Select Calendar</option>
+                    <option value="XNSE">XNSE</option>
+                    <option value="BCME">BCME</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="lookup_window_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Look up window:</label
+                  >
+                  <input
+                    type="number"
+                    id="lookup_window_${form.id}"
+                    name="lookup_window"
+                    class="form-input"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  />
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label
+                    for="positive_return_size_${form.id}"
+                    style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
+                    >Positive return size:</label
+                  >
+                  <input
+                    type="number"
+                    id="positive_return_size_${form.id}"
+                    name="positive_return_size"
+                    class="form-input"
+                    style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
+                  />
+                </div>
+              </div>
+            </div>
+          `
+        )}
+      </div>
+    </div>
         `;
       }
 
