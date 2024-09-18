@@ -43,19 +43,23 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
         </h4>
         <div class="form-group" style="margin-bottom: 10px;">
           <label
-            for="calendar_${form.id}"
+            for="calendar_generic_${form.id}"
             style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
           >
             Calendar:
           </label>
           <select
-            id="calendar_${form.id}"
-            name="calendar"
+            id="calendar_generic_${form.id}"
+            name="calendar_generic"
             class="form-select"
             style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
-            value=${form.filter.calendar || ""}
+            value=${form.filter.calendar_generic || ""}
             onChange=${(e) =>
-              handleFilterInputChange(form.id, "calendar", e.target.value)}
+              handleFilterInputChange(
+                form.id,
+                "calendar_generic",
+                e.target.value
+              )}
           >
             <option value="">Select Calendar</option>
             <option value="XNSE">XNSE</option>
@@ -64,38 +68,46 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
         </div>
         <div class="form-group" style="margin-bottom: 10px;">
           <label
-            for="lookup_window_${form.id}"
+            for="lookup_window_generic_${form.id}"
             style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
           >
             Look up window:
           </label>
           <input
             type="number"
-            id="lookup_window_${form.id}"
-            name="lookup_window"
+            id="lookup_window_generic_${form.id}"
+            name="lookup_window_generic"
             class="form-input"
             style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
-            value=${form.filter.lookup_window || ""}
+            value=${form.filter.lookup_window_generic || ""}
             onInput=${(e) =>
-              handleFilterInputChange(form.id, "lookup_window", e.target.value)}
+              handleFilterInputChange(
+                form.id,
+                "lookup_window_generic",
+                e.target.value
+              )}
           />
         </div>
         <div class="form-group" style="margin-bottom: 10px;">
           <label
-            for="return_size_${form.id}"
+            for="return_size_generic_${form.id}"
             style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
           >
             Return size:
           </label>
           <input
             type="number"
-            id="return_size_${form.id}"
-            name="return_size"
+            id="return_size_generic_${form.id}"
+            name="return_size_generic"
             class="form-input"
             style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
-            value=${form.filter.return_size || ""}
+            value=${form.filter.return_size_generic || ""}
             onInput=${(e) =>
-              handleFilterInputChange(form.id, "return_size", e.target.value)}
+              handleFilterInputChange(
+                form.id,
+                "return_size_generic",
+                e.target.value
+              )}
           />
         </div>
       </div>
@@ -107,19 +119,23 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
         </h4>
         <div class="form-group" style="margin-bottom: 10px;">
           <label
-            for="calendar_${form.id}"
+            for="calendar_positive_${form.id}"
             style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
           >
             Calendar:
           </label>
           <select
-            id="calendar_${form.id}"
-            name="calendar"
+            id="calendar_positive_${form.id}"
+            name="calendar_positive"
             class="form-select"
             style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
-            value=${form.filter.calendar || ""}
+            value=${form.filter.calendar_positive || ""}
             onChange=${(e) =>
-              handleFilterInputChange(form.id, "calendar", e.target.value)}
+              handleFilterInputChange(
+                form.id,
+                "calendar_positive",
+                e.target.value
+              )}
           >
             <option value="">Select Calendar</option>
             <option value="XNSE">XNSE</option>
@@ -128,20 +144,24 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
         </div>
         <div class="form-group" style="margin-bottom: 10px;">
           <label
-            for="lookup_window_${form.id}"
+            for="lookup_window_positive_${form.id}"
             style="display: block; margin-bottom: 5px; font-weight: bold; color: rgb(85, 85, 85);"
           >
             Look up window:
           </label>
           <input
             type="number"
-            id="lookup_window_${form.id}"
-            name="lookup_window"
+            id="lookup_window_positive_${form.id}"
+            name="lookup_window_positive"
             class="form-input"
             style="padding: 8px; border: 1px solid rgb(221, 221, 221); border-radius: 4px; width: 100%;"
-            value=${form.filter.lookup_window || ""}
+            value=${form.filter.lookup_window_positive || ""}
             onInput=${(e) =>
-              handleFilterInputChange(form.id, "lookup_window", e.target.value)}
+              handleFilterInputChange(
+                form.id,
+                "lookup_window_positive",
+                e.target.value
+              )}
           />
         </div>
         <div class="form-group" style="margin-bottom: 10px;">
