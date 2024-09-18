@@ -89,13 +89,12 @@
         };
 
         return html`
-          <${Form}
-            strategy=${strategyName}
-            class_name=${strategyData.class || ""}
-            universe=${strategyData.universe || ""}
-            filters=${strategyData.filters || []}
-            onStrategyNameChange=${handleStrategyNameChange}
-          />
+          <${Form} strategy=${strategyName}
+          class_name=${strategyData.class || ""}
+          universe=${strategyData.universe || ""} {console.log("Universe from
+          strategyData:", strategyData.universe);}
+          filters=${strategyData.filters || []}
+          onStrategyNameChange=${handleStrategyNameChange} />
           <${AddFilterButton} onClick=${handleAddFilter} />
           <div>
             ${filterForms.map(

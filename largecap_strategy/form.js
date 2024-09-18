@@ -113,31 +113,37 @@ const Form = (props) => {
       const updatedValues = {};
       const updatedFilters = [];
 
-      strategyData.filters.forEach((filter) => {
-        const filterDefinition = settings.filters.find(
-          (f) => f.class === filter.filter
-        );
-        if (filterDefinition) {
-          updatedFilters.push(filterDefinition);
+      // Ensure strategyData.filters is an array
+      if (Array.isArray(strategyData.filters)) {
+        strategyData.filters.forEach((filter) => {
+          const filterDefinition = settings.filters.find(
+            (f) => f.class === filter.filter
+          );
+          if (filterDefinition) {
+            updatedFilters.push(filterDefinition);
 
-          filter.options.forEach((optionObject) => {
-            Object.keys(optionObject).forEach((property) => {
-              if (property) {
-                updatedValues[property] = optionObject[property]; // Set value
-              }
+            filter.options.forEach((optionObject) => {
+              Object.keys(optionObject).forEach((property) => {
+                if (property) {
+                  updatedValues[property] = optionObject[property]; // Set value
+                }
+              });
             });
-          });
-        }
-      });
+          }
+        });
+      }
 
       console.log("Updated Values:", updatedValues); // Log updated values
       console.log("Updated Filters:", updatedFilters); // Log updated filters
 
+      // Update form state
       setFilters(updatedFilters);
       setInitialValues((prevValues) => ({
         ...prevValues,
         ...updatedValues, // Merge new values with existing ones
-      })); // Prefill form with strategy data
+      }));
+      setSelectedClass(strategyData.class || "None"); // Ensure class is set
+      setSelectedUniverse(strategyData.universe || ""); // Prefill universe
     }
   }, [strategyName, strategiesData]);
 
@@ -273,21 +279,21 @@ const Form = (props) => {
     display: "block",
     marginBottom: "5px",
     fontWeight: "bold",
-    color: "#555",
-  };
-
-  const inputStyle = {
-    padding: "8px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    width: "100%",
+    color: "#333",
   };
 
   const selectStyle = {
+    width: "100%",
     padding: "8px",
     border: "1px solid #ddd",
     borderRadius: "4px",
+  };
+
+  const inputStyle = {
     width: "100%",
+    padding: "8px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
   };
 
   const filterGroupStyle = {
@@ -297,34 +303,13 @@ const Form = (props) => {
   const filterTitleStyle = {
     fontSize: "16px",
     fontWeight: "bold",
-    marginBottom: "10px",
     color: "#333",
   };
 
-  const formContainerStyle = {
-    maxWidth: "600px",
-    margin: "auto",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    backgroundColor: "#f9f9f9",
-  };
-
-  const formGroupStyle = {
-    marginBottom: "20px",
-  };
-
-  const formLabelStyle = {
-    display: "block",
-    marginBottom: "5px",
-    fontWeight: "bold",
-    color: "#555",
-  };
-
   return html`
-    <div class="form-container" style=${formContainerStyle}>
-      <div class="form-group" style=${formGroupStyle}>
-        <label for="strategyName" style=${formLabelStyle}>
+    <div class="form-container">
+      <div class="form-group">
+        <label for="strategyName" style=${filterOptionLabelStyle}>
           Strategy Name:
         </label>
         <input
@@ -333,16 +318,18 @@ const Form = (props) => {
           name="strategyName"
           class="form-input"
           style=${inputStyle}
-          value=${strategyName || ""}
+          value=${strategyName}
           onInput=${onStrategyNameInput}
         />
       </div>
 
-      <div class="form-group" style=${formGroupStyle}>
-        <label for="class" style=${formLabelStyle}> Class: </label>
+      <div class="form-group">
+        <label for="class_name" style=${filterOptionLabelStyle}>
+          Strategy Class:
+        </label>
         <select
-          id="class"
-          name="class"
+          id="class_name"
+          name="class_name"
           class="form-select"
           style=${selectStyle}
           value=${selectedClass || ""}
@@ -350,16 +337,21 @@ const Form = (props) => {
         >
           <option value="">Select Class</option>
           ${settings.classes.map(
-            (cls) =>
-              html`<option value="${cls}" selected=${selectedClass === cls}>
-                ${cls}
+            (classItem) =>
+              html`<option
+                value="${classItem}"
+                selected=${selectedClass === classItem}
+              >
+                ${classItem}
               </option>`
           )}
         </select>
       </div>
 
-      <div class="form-group" style=${formGroupStyle}>
-        <label for="universe" style=${formLabelStyle}> Universe: </label>
+      <div class="form-group">
+        <label for="universe" style=${filterOptionLabelStyle}>
+          Universe:
+        </label>
         <select
           id="universe"
           name="universe"
@@ -370,9 +362,12 @@ const Form = (props) => {
         >
           <option value="">Select Universe</option>
           ${settings.universes.map(
-            (uni) =>
-              html`<option value="${uni}" selected=${selectedUniverse === uni}>
-                ${uni}
+            (universeItem) =>
+              html`<option
+                value="${universeItem}"
+                selected=${selectedUniverse === universeItem}
+              >
+                ${universeItem}
               </option>`
           )}
         </select>
