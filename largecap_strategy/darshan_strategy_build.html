@@ -21,6 +21,7 @@
       import { AddFilterButton } from "./AddFilterButton.js";
       import { FilterForm } from "./FilterForm.js";
       import { Toast } from "./Toast.js"; // Import the Toast component
+      import { AddCustomFilterButton } from "./AddCustomFiltersButton.js";
       import { CustomFilterForm } from "./CustomFilterForm.js"; // Import CustomFilterForm
 
       const strategies = {
@@ -131,14 +132,10 @@
 
           <!-- Custom Filters Section -->
           <div>
-            <button
-              style="margin-bottom: 10px; padding: 8px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;"
-              onClick=${handleAddCustomFilter}
-            >
-              Add Custom Filter
-            </button>
+            <${AddCustomFilterButton} onClick=${handleAddCustomFilter} />
             ${customFilters.map(
               (filter) => html`
+                <!-- Render Custom Filter Form -->
                 <${CustomFilterForm}
                   key=${filter.id}
                   filter=${filter}
