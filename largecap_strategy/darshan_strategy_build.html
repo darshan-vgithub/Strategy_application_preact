@@ -21,7 +21,8 @@
       import { AddFilterButton } from "./AddFilterButton.js";
       import { FilterForm } from "./FilterForm.js";
       import { Toast } from "./Toast.js"; // Import the Toast component
-      import { CustomFilters } from "./CustomFilters.js"; // Import the CustomFilters component
+      import { AddCustomFiltersButton } from "./AddCustomFiltersButton.js";
+      import { CustomFilterForm } from "./CustomFilterForm.js"; // Import CustomFilterForm
 
       const strategies = {
         "Example Strategy": {
@@ -42,28 +43,13 @@
         const [filterForms, setFilterForms] = useState([]);
         const [toastMessage, setToastMessage] = useState("");
         const [toastType, setToastType] = useState("success"); // 'success' or 'error'
-        const [customFilters, setCustomFilters] = useState([
-          {
-            name: "customFilter1",
-            label: "Custom Filter 1",
-            type: "text",
-            value: "",
-          },
-          {
-            name: "customFilter2",
-            label: "Custom Filter 2",
-            type: "number",
-            value: "",
-          },
-          // Add more filters as needed
-        ]);
-        const [showCustomFilters, setShowCustomFilters] = useState(false); // Track whether to show custom filters
+        const [customFilters, setCustomFilters] = useState([]); // Track custom filters
+        const [showCustomFilters, setShowCustomFilters] = useState(false); // Toggle custom filters
 
         const handleStrategyNameChange = (e) => {
-          const name = e.target.value.trim(); // Trim to avoid unwanted spaces
+          const name = e.target.value.trim();
           setStrategyName(name);
 
-          // Fetch and set strategy data
           if (strategies[name]) {
             setStrategyData({
               class: strategies[name].class || "",
@@ -78,46 +64,43 @@
         };
 
         const handleAddFilter = () => {
-          // Add a new filter form to the list
           setFilterForms((prevForms) => [
             ...prevForms,
-            { id: Date.now(), filter: {} }, // Create a unique id and an empty filter object
+            { id: Date.now(), filter: {} },
           ]);
-          // Show success toast
           setToastMessage("Filter added successfully!");
           setToastType("success");
-          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-        };
-
-        const handleFilterInputChange = (id, property, value) => {
-          setFilterForms((prevForms) =>
-            prevForms.map((form) =>
-              form.id === id
-                ? { ...form, filter: { ...form.filter, [property]: value } }
-                : form
-            )
-          );
+          setTimeout(() => setToastMessage(""), 3000);
         };
 
         const handleDeleteFilter = (id) => {
           setFilterForms((prevForms) =>
             prevForms.filter((form) => form.id !== id)
           );
-          // Show success toast
           setToastMessage("Filter deleted successfully!");
           setToastType("error");
-          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+          setTimeout(() => setToastMessage(""), 3000);
         };
 
-        const handleCustomFilterChange = (index, newValue) => {
-          const updatedFilters = customFilters.map((filter, i) =>
-            i === index ? { ...filter, value: newValue } : filter
-          );
-          setCustomFilters(updatedFilters);
+        const handleAddCustomFilter = () => {
+          setCustomFilters((prev) => [
+            ...prev,
+            {
+              id: Date.now(),
+              name: "",
+              calendar: "",
+              lookUpWindow: "",
+              returnSize: "",
+            },
+          ]);
+        };
+
+        const handleRemoveCustomFilter = (id) => {
+          setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
         };
 
         const toggleCustomFilters = () => {
-          setShowCustomFilters((prevState) => !prevState); // Toggle visibility
+          setShowCustomFilters((prevState) => !prevState);
         };
 
         return html`
@@ -134,25 +117,36 @@
               (form) => html`
                 <${FilterForm}
                   form=${form}
-                  handleFilterInputChange=${handleFilterInputChange}
-                  handleDelete=${handleDeleteFilter}
+                  handleFilterInputChange=${() => {}}
+                  handleDelete=${() => handleDeleteFilter(form.id)}
                 />
               `
             )}
           </div>
 
-          <!-- Add Custom Filters Button -->
-          <button onClick=${toggleCustomFilters}>
-            ${showCustomFilters ? "Hide Custom Filters" : "Add Custom Filters"}
-          </button>
+          <${AddCustomFiltersButton}
+            showCustomFilters=${showCustomFilters}
+            onClick=${toggleCustomFilters}
+          />
 
-          <!-- Conditionally render CustomFilters component -->
           ${showCustomFilters &&
           html`
-            <${CustomFilters}
-              filters=${customFilters}
-              handleFilterChange=${handleCustomFilterChange}
-            />
+            <div>
+              <button
+                style="margin-bottom: 10px; padding: 8px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                onClick=${handleAddCustomFilter}
+              >
+                Add Custom Filter
+              </button>
+              ${customFilters.map(
+                (filter) => html`
+                  <${CustomFilterForm}
+                    key=${filter.id}
+                    onRemove=${() => handleRemoveCustomFilter(filter.id)}
+                  />
+                `
+              )}
+            </div>
           `}
 
           <${Toast} message=${toastMessage} type=${toastType} />
