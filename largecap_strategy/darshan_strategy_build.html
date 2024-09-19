@@ -21,6 +21,7 @@
       import { AddFilterButton } from "./AddFilterButton.js";
       import { FilterForm } from "./FilterForm.js";
       import { Toast } from "./Toast.js"; // Import the Toast component
+      import { CustomFilters } from "./CustomFilters.js"; // Import the CustomFilters component
 
       const strategies = {
         "Example Strategy": {
@@ -41,6 +42,21 @@
         const [filterForms, setFilterForms] = useState([]);
         const [toastMessage, setToastMessage] = useState("");
         const [toastType, setToastType] = useState("success"); // 'success' or 'error'
+        const [customFilters, setCustomFilters] = useState([
+          {
+            name: "customFilter1",
+            label: "Custom Filter 1",
+            type: "text",
+            value: "",
+          },
+          {
+            name: "customFilter2",
+            label: "Custom Filter 2",
+            type: "number",
+            value: "",
+          },
+          // Add more filters as needed
+        ]);
 
         const handleStrategyNameChange = (e) => {
           const name = e.target.value.trim(); // Trim to avoid unwanted spaces
@@ -92,13 +108,21 @@
           setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
         };
 
+        const handleCustomFilterChange = (index, newValue) => {
+          const updatedFilters = customFilters.map((filter, i) =>
+            i === index ? { ...filter, value: newValue } : filter
+          );
+          setCustomFilters(updatedFilters);
+        };
+
         return html`
-          <${Form} strategy=${strategyName}
-          class_name=${strategyData.class || ""}
-          universe=${strategyData.universe || ""} {console.log("Universe from
-          strategyData:", strategyData.universe);}
-          filters=${strategyData.filters || []}
-          onStrategyNameChange=${handleStrategyNameChange} />
+          <${Form}
+            strategy=${strategyName}
+            class_name=${strategyData.class || ""}
+            universe=${strategyData.universe || ""}
+            filters=${strategyData.filters || []}
+            onStrategyNameChange=${handleStrategyNameChange}
+          />
           <${AddFilterButton} onClick=${handleAddFilter} />
           <div>
             ${filterForms.map(
@@ -111,6 +135,10 @@
               `
             )}
           </div>
+          <${CustomFilters}
+            filters=${customFilters}
+            handleFilterChange=${handleCustomFilterChange}
+          />
           <${Toast} message=${toastMessage} type=${toastType} />
         `;
       }

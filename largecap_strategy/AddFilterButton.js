@@ -20,7 +20,8 @@ const buttonStyle = {
 const AddFilterButton = ({ onClick }) => {
   return html`
     <button onClick=${onClick} style=${buttonStyle}>
-      <i class="fa-solid fa-filter"></i>
+      Add Filter
+      <i class="fa-solid fa-filter" style="padding-left: 10px;"></i>
     </button>
   `;
 };
