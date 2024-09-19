@@ -82,10 +82,16 @@
               returnSize: "",
             },
           ]);
+          setToastMessage("Custom filter added successfully!");
+          setToastType("success");
+          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
         };
 
         const handleRemoveCustomFilter = (id) => {
           setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
+          setToastMessage("Custom filter removed successfully!");
+          setToastType("error");
+          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
         };
 
         const handleDeleteFilter = (id) => {
