@@ -21,7 +21,8 @@ export function CustomFilterForm({ onRemove }) {
         style="width: 100%; padding: 8px; box-sizing: border-box;"
       >
         <option value="">Select Calendar</option>
-        <!-- Add more options dynamically if needed -->
+        <option value="XNSE">XNSE</option>
+        <option value="BCME">BCME</option>
       </select>
 
       <label style="display: block; margin: 10px 0 5px;">Look up window:</label>
