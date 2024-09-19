@@ -3,8 +3,13 @@ import {
   useState,
   useEffect,
 } from "https://esm.sh/htm/preact/standalone";
+import { showToast } from "./Toast.js";
+import { AddFilterButton } from "./AddFilterButton.js";
+import { AddCustomFilterButton } from "./AddCustomFiltersButton.js";
+import { FilterForm } from "./FilterForm.js";
+import { CustomFilterForm } from "./CustomFilterForm.js";
+import { Toast } from "./Toast.js"; // Import the Toast component
 
-// Sample settings data
 const settings = {
   classes: ["CruiseMomentum", "None"],
   universes: [
@@ -74,11 +79,18 @@ const Form = (props) => {
   const [strategyName, setStrategyName] = useState(strategy);
   const [initialValues, setInitialValues] = useState({});
   const [strategiesData, setStrategiesData] = useState({});
+  const [customFilters, setCustomFilters] = useState([]);
+  const [showFilterForm, setShowFilterForm] = useState(false); // For toggling the filter form
+  const [showCustomFilterForm, setShowCustomFilterForm] = useState(false); // For custom filter form
+
+  // States for filters and toasts
+  const [filterForms, setFilterForms] = useState([]); // State to hold filter forms
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
 
   useEffect(() => {
     const initializeForm = async () => {
       const data = await fetchStrategiesData();
-      console.log("Fetched Strategies Data:", data); // Log fetched data
       setStrategiesData(data);
 
       const filtersForClass =
@@ -108,12 +120,10 @@ const Form = (props) => {
   useEffect(() => {
     if (strategyName && strategiesData[strategyName]) {
       const strategyData = strategiesData[strategyName];
-      console.log("Strategy Data for", strategyName, ":", strategyData); // Log strategy data
 
       const updatedValues = {};
       const updatedFilters = [];
 
-      // Ensure strategyData.filters is an array
       if (Array.isArray(strategyData.filters)) {
         strategyData.filters.forEach((filter) => {
           const filterDefinition = settings.filters.find(
@@ -133,10 +143,6 @@ const Form = (props) => {
         });
       }
 
-      console.log("Updated Values:", updatedValues); // Log updated values
-      console.log("Updated Filters:", updatedFilters); // Log updated filters
-
-      // Update form state
       setFilters(updatedFilters);
       setInitialValues((prevValues) => ({
         ...prevValues,
@@ -144,6 +150,8 @@ const Form = (props) => {
       }));
       setSelectedClass(strategyData.class || "None"); // Ensure class is set
       setSelectedUniverse(strategyData.universe || ""); // Prefill universe
+    } else if (strategyName) {
+      showToast("Strategy not found!", "error"); // Show custom toast if strategy not found
     }
   }, [strategyName, strategiesData]);
 
@@ -183,19 +191,80 @@ const Form = (props) => {
   };
 
   const handleInputChange = (name, value) => {
-    console.log(`Handling Input Change - Name: ${name}, Value: ${value}`); // Log input changes
-
     setInitialValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
   };
 
-  const FilterOption = ({ option, value = "", onInputChange }) => {
-    console.log("FilterOption - Option:", option); // Log option
-    console.log("FilterOption - Value:", value); // Log value
+  const addFilter = (filter) => {
+    setFilters((prevFilters) => [...prevFilters, filter]);
+  };
 
-    // Render select input for calendar type
+  const addCustomFilter = (filter) => {
+    setCustomFilters((prevCustomFilters) => [...prevCustomFilters, filter]);
+  };
+
+  const generateJSON = () => {
+    const formData = {
+      strategyName,
+      class: selectedClass,
+      universe: selectedUniverse,
+      filters: strategyFilters.map((filter) => ({
+        class: filter.class,
+        options: Object.keys(initialValues).map((key) => ({
+          property: key,
+          value: initialValues[key],
+        })),
+      })),
+      customFilters, // Include custom filters in the JSON
+    };
+    console.log("Generated JSON:", JSON.stringify(formData, null, 2));
+    // Display JSON in the UI
+    showToast("JSON data generated. Check console for details.", "success");
+  };
+
+  const handleAddFilter = () => {
+    setFilterForms((prevForms) => [
+      ...prevForms,
+      { id: Date.now(), filter: {} },
+    ]);
+    setToastMessage("Filter added successfully!");
+    setToastType("success");
+    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  };
+
+  const handleAddCustomFilter = () => {
+    setCustomFilters((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        name: "",
+        calendar: "",
+        lookUpWindow: "",
+        returnSize: "",
+      },
+    ]);
+    setToastMessage("Custom filter added successfully!");
+    setToastType("success");
+    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  };
+
+  const handleRemoveCustomFilter = (id) => {
+    setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
+    setToastMessage("Custom filter removed successfully!");
+    setToastType("error");
+    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  };
+
+  const handleDeleteFilter = (id) => {
+    setFilterForms((prevForms) => prevForms.filter((form) => form.id !== id));
+    setToastMessage("Filter deleted successfully!");
+    setToastType("error");
+    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  };
+
+  const FilterOption = ({ option, value = "", onInputChange }) => {
     if (option.type === "calendar") {
       return html`
         <div class="form-group" style=${filterOptionStyle}>
@@ -213,16 +282,17 @@ const Form = (props) => {
             <option value="">Select Calendar</option>
             ${settings.calendars.map(
               (calendar) =>
-                html`<option value="${calendar}" selected=${value === calendar}>
-                  ${calendar}
-                </option>`
+                html`
+                  <option value="${calendar}" selected=${value === calendar}>
+                    ${calendar}
+                  </option>
+                `
             )}
           </select>
         </div>
       `;
     }
 
-    // Render other types of inputs (number, text)
     return html`
       <div class="form-group" style=${filterOptionStyle}>
         <label for=${option.property} style=${filterOptionLabelStyle}>
@@ -241,161 +311,195 @@ const Form = (props) => {
     `;
   };
 
-  const Filters = ({ strategyFilters, initialValues, onInputChange }) => {
-    console.log("Filters Component Initial Values:", initialValues); // Debugging
-
+  const Filters = ({ strategyFilters, initialValues, handleInputChange }) => {
     return html`
-      <div class="filters-container">
-        ${strategyFilters.map((f) => {
-          const filter = settings.filters.find((o) => o.class === f.class);
-          if (!filter) return null;
-
-          console.log("Filter:", filter); // Log filter
-
-          return html`
-            <div
-              key=${filter.label}
-              class="filter-group"
-              style=${filterGroupStyle}
-            >
-              <h4 style=${filterTitleStyle}>${filter.label}</h4>
+      <div class="filters-section">
+        ${strategyFilters.map(
+          (filter) =>
+            html`
+              <h4>${filter.label}</h4>
               ${filter.options.map(
-                (option) => html`<${FilterOption} option=${option}
-                value=${initialValues[option.property] || ""} // Ensure correct
-                value onInputChange=${onInputChange} />`
+                (option) =>
+                  html`
+                    <${FilterOption}
+                      option=${option}
+                      value=${initialValues[option.property] || ""}
+                      onInputChange=${handleInputChange}
+                    />
+                  `
               )}
-            </div>
-          `;
-        })}
+            `
+        )}
       </div>
     `;
   };
 
-  const formContainerStyle = {
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#fff",
-  };
-
-  const formGroupStyle = {
-    marginBottom: "16px",
-  };
-
-  const filterOptionStyle = {
-    marginBottom: "12px",
-  };
-
-  const filterOptionLabelStyle = {
-    display: "block",
-    marginBottom: "6px",
-    fontWeight: "bold",
-    color: "#333",
-  };
-
-  const selectStyle = {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "16px",
-  };
-
-  const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "16px",
-  };
-
-  const filterGroupStyle = {
-    marginBottom: "24px",
-  };
-
-  const filterTitleStyle = {
-    fontSize: "18px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "12px",
-  };
-
   return html`
     <div class="form-container" style=${formContainerStyle}>
+      <h2>Strategy Form</h2>
       <div class="form-group" style=${formGroupStyle}>
-        <label for="strategyName" style=${filterOptionLabelStyle}>
-          Strategy Name:
-        </label>
+        <label for="strategyName">Strategy Name:</label>
         <input
           type="text"
           id="strategyName"
           name="strategyName"
-          class="form-input"
-          style=${inputStyle}
-          value=${strategyName}
+          value=${strategyName || ""}
           onInput=${onStrategyNameInput}
+          style=${inputStyle}
         />
       </div>
 
       <div class="form-group" style=${formGroupStyle}>
-        <label for="class_name" style=${filterOptionLabelStyle}>
-          Strategy Class:
-        </label>
+        <label for="class">Class:</label>
         <select
-          id="class_name"
-          name="class_name"
-          class="form-select"
-          style=${selectStyle}
-          value=${selectedClass || ""}
+          id="class"
+          name="class"
+          value=${selectedClass}
           onInput=${onClassInput}
+          style=${selectStyle}
         >
-          <option value="">Select Class</option>
+          <option value="None">None</option>
           ${settings.classes.map(
-            (classItem) =>
-              html`<option
-                value="${classItem}"
-                selected=${selectedClass === classItem}
-              >
-                ${classItem}
-              </option>`
+            (className) =>
+              html`
+                <option
+                  value="${className}"
+                  selected=${selectedClass === className}
+                >
+                  ${className}
+                </option>
+              `
           )}
         </select>
       </div>
 
       <div class="form-group" style=${formGroupStyle}>
-        <label for="universe" style=${filterOptionLabelStyle}>
-          Universe:
-        </label>
+        <label for="universe">Universe:</label>
         <select
           id="universe"
           name="universe"
-          class="form-select"
-          style=${selectStyle}
-          value=${selectedUniverse || ""}
+          value=${selectedUniverse}
           onInput=${onUniverseInput}
+          style=${selectStyle}
         >
           <option value="">Select Universe</option>
           ${settings.universes.map(
-            (universeItem) =>
-              html`<option
-                value="${universeItem}"
-                selected=${selectedUniverse === universeItem}
-              >
-                ${universeItem}
-              </option>`
+            (universe) =>
+              html`
+                <option
+                  value="${universe}"
+                  selected=${selectedUniverse === universe}
+                >
+                  ${universe}
+                </option>
+              `
           )}
         </select>
       </div>
 
-      <${Filters}
-        strategyFilters=${strategyFilters}
-        initialValues=${initialValues}
-        onInputChange=${handleInputChange}
-      />
+      <div class="filters-section" style=${filterGroupStyle}>
+        <h3 style=${filterTitleStyle}>Filters</h3>
+        <${Filters}
+          strategyFilters=${strategyFilters}
+          initialValues=${initialValues}
+          handleInputChange=${handleInputChange}
+        />
+        <${AddFilterButton} onClick=${handleAddFilter} />
+        <div>
+          ${filterForms.map(
+            (form) => html`
+              <${FilterForm}
+                key=${form.id}
+                form=${form}
+                handleFilterInputChange=${() => {}}
+                handleDelete=${() => handleDeleteFilter(form.id)}
+              />
+            `
+          )}
+        </div>
+      </div>
+
+      <div class="custom-filters-section" style=${filterGroupStyle}>
+        <h3 style=${filterTitleStyle}>Custom Filters</h3>
+        <${AddCustomFilterButton} onClick=${handleAddCustomFilter} />
+        <div>
+          ${customFilters.map(
+            (filter) => html`
+              <${CustomFilterForm}
+                key=${filter.id}
+                filter=${filter}
+                onRemove=${() => handleRemoveCustomFilter(filter.id)}
+              />
+            `
+          )}
+        </div>
+      </div>
+
+      <div class="form-group" style=${formGroupStyle}>
+        <button
+          class="generate-json-btn"
+          style=${inputStyle}
+          onClick=${generateJSON}
+        >
+          Generate JSON
+        </button>
+      </div>
+
+      <!-- Toast Notifications -->
+      <${Toast} message=${toastMessage} type=${toastType} />
     </div>
   `;
+};
+
+const formContainerStyle = {
+  maxWidth: "800px",
+  margin: "0 auto",
+  padding: "20px",
+  borderRadius: "8px",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  backgroundColor: "#fff",
+};
+
+const formGroupStyle = {
+  marginBottom: "16px",
+};
+
+const filterOptionStyle = {
+  marginBottom: "12px",
+};
+
+const filterOptionLabelStyle = {
+  display: "block",
+  marginBottom: "6px",
+  fontWeight: "bold",
+  color: "#333",
+};
+
+const selectStyle = {
+  width: "100%",
+  padding: "10px",
+  border: "1px solid #ddd",
+  borderRadius: "4px",
+  fontSize: "16px",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "10px",
+  border: "1px solid #ddd",
+  borderRadius: "4px",
+  fontSize: "16px",
+};
+
+const filterGroupStyle = {
+  marginBottom: "24px",
+};
+
+const filterTitleStyle = {
+  fontSize: "18px",
+  fontWeight: "600",
+  color: "#333",
+  marginBottom: "12px",
 };
 
 export { Form };
