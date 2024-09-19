@@ -57,6 +57,7 @@
           },
           // Add more filters as needed
         ]);
+        const [showCustomFilters, setShowCustomFilters] = useState(false); // Track whether to show custom filters
 
         const handleStrategyNameChange = (e) => {
           const name = e.target.value.trim(); // Trim to avoid unwanted spaces
@@ -115,6 +116,10 @@
           setCustomFilters(updatedFilters);
         };
 
+        const toggleCustomFilters = () => {
+          setShowCustomFilters((prevState) => !prevState); // Toggle visibility
+        };
+
         return html`
           <${Form}
             strategy=${strategyName}
@@ -135,10 +140,21 @@
               `
             )}
           </div>
-          <${CustomFilters}
-            filters=${customFilters}
-            handleFilterChange=${handleCustomFilterChange}
-          />
+
+          <!-- Add Custom Filters Button -->
+          <button onClick=${toggleCustomFilters}>
+            ${showCustomFilters ? "Hide Custom Filters" : "Add Custom Filters"}
+          </button>
+
+          <!-- Conditionally render CustomFilters component -->
+          ${showCustomFilters &&
+          html`
+            <${CustomFilters}
+              filters=${customFilters}
+              handleFilterChange=${handleCustomFilterChange}
+            />
+          `}
+
           <${Toast} message=${toastMessage} type=${toastType} />
         `;
       }
