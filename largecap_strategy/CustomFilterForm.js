@@ -1,75 +1,5 @@
-/** @jsxImportSource @emotion/react */
 import { html } from "https://esm.sh/htm/preact/standalone";
 
-const CustomFilterForm = ({ filter, onRemove }) => {
-  return html`
-    <div style=${formContainerStyle}>
-      <div style=${formGroupStyle}>
-        <label style=${filterOptionLabelStyle}>Filter Name</label>
-        <input
-          type="text"
-          value=${filter.name}
-          placeholder="Enter filter name"
-          style=${inputStyle}
-          onInput=${(e) =>
-            /* Handle input change */ console.log(e.target.value)}
-        />
-      </div>
-
-      <div style=${formGroupStyle}>
-        <label style=${filterOptionLabelStyle}>Calendar</label>
-        <input
-          type="text"
-          value=${filter.calendar}
-          placeholder="Enter calendar"
-          style=${inputStyle}
-          onInput=${(e) =>
-            /* Handle input change */ console.log(e.target.value)}
-        />
-      </div>
-
-      <div style=${filterGroupStyle}>
-        <label style=${filterOptionLabelStyle}>Lookup Window</label>
-        <input
-          type="text"
-          value=${filter.lookUpWindow}
-          placeholder="Enter lookup window"
-          style=${inputStyle}
-          onInput=${(e) =>
-            /* Handle input change */ console.log(e.target.value)}
-        />
-      </div>
-
-      <div style=${filterGroupStyle}>
-        <label style=${filterOptionLabelStyle}>Return Size</label>
-        <input
-          type="text"
-          value=${filter.returnSize}
-          placeholder="Enter return size"
-          style=${inputStyle}
-          onInput=${(e) =>
-            /* Handle input change */ console.log(e.target.value)}
-        />
-      </div>
-
-      <button
-        style=${{
-          padding: "8px 12px",
-          backgroundColor: "#f44336",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-        onClick=${onRemove}
-      >
-        Remove
-      </button>
-    </div>
-  `;
-};
-
-// Apply styles here
 const formContainerStyle = {
   maxWidth: "800px",
   margin: "0 auto",
@@ -121,4 +51,66 @@ const filterTitleStyle = {
   marginBottom: "12px",
 };
 
-export { CustomFilterForm };
+export function CustomFilterForm({ filter, onRemove, onFilterChange }) {
+  return html`
+    <div style=${formContainerStyle}>
+      <div style=${formGroupStyle}>
+        <label style=${filterOptionLabelStyle}>Custom Filter Name:</label>
+        <input
+          type="text"
+          class="custom-filter-name"
+          placeholder="Filter Name"
+          style=${inputStyle}
+          value=${filter.name}
+          onInput=${(e) => onFilterChange(e, "name")}
+        />
+      </div>
+
+      <div style=${formGroupStyle}>
+        <label style=${filterOptionLabelStyle}>Calendar:</label>
+        <select
+          class="custom-calendar-select"
+          style=${selectStyle}
+          value=${filter.calendar}
+          onChange=${(e) => onFilterChange(e, "calendar")}
+        >
+          <option value="">Select Calendar</option>
+          <option value="XNSE">XNSE</option>
+          <option value="BCME">BCME</option>
+        </select>
+      </div>
+
+      <div style=${formGroupStyle}>
+        <label style=${filterOptionLabelStyle}>Look up window:</label>
+        <input
+          type="number"
+          class="custom-look-up-window"
+          placeholder="Look up window"
+          style=${inputStyle}
+          value=${filter.lookUpWindow}
+          onInput=${(e) => onFilterChange(e, "lookUpWindow")}
+        />
+      </div>
+
+      <div style=${formGroupStyle}>
+        <label style=${filterOptionLabelStyle}>Return size:</label>
+        <input
+          type="number"
+          class="custom-return-size"
+          placeholder="Return size"
+          style=${inputStyle}
+          value=${filter.returnSize}
+          onInput=${(e) => onFilterChange(e, "returnSize")}
+        />
+      </div>
+
+      <button
+        class="remove-custom-filter"
+        style="margin-top: 10px; padding: 8px 12px; background-color: #f44336; color: #fff; border: none; border-radius: 4px; cursor: pointer;"
+        onClick=${onRemove}
+      >
+        Remove
+      </button>
+    </div>
+  `;
+}
