@@ -209,9 +209,9 @@ const Form = (props) => {
     const allFilters = [
       ...strategyFilters.map((filter) => ({
         class: filter.class,
-        options: Object.keys(initialValues).map((key) => ({
-          property: key,
-          value: initialValues[key],
+        options: filter.options.map((option) => ({
+          property: option.property,
+          value: initialValues[option.property] || "",
         })),
       })),
       ...customFilters.map((customFilter) => ({
@@ -222,7 +222,7 @@ const Form = (props) => {
       })),
       ...filterForms.map((form) => ({
         filterId: form.id,
-        // Add other properties as needed based on FilterForm
+        ...form.filter, // Make sure to include the entire filter structure
       })),
     ];
 
@@ -238,10 +238,18 @@ const Form = (props) => {
   };
 
   const handleAddFilter = () => {
-    setFilterForms((prevForms) => [
-      ...prevForms,
-      { id: Date.now(), filter: {} },
-    ]);
+    const newFilter = {
+      id: Date.now(),
+      filter: {
+        class: "YourFilterClass", // Set the appropriate class name
+        options: settings.filters.map((filter) => ({
+          property: filter.options[0].property, // Add initial properties
+          value: "", // Initialize with empty value
+        })),
+      },
+    };
+
+    setFilterForms((prevForms) => [...prevForms, newFilter]);
     setToastMessage("Filter added successfully!");
     setToastType("success");
     setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
@@ -338,6 +346,15 @@ const Form = (props) => {
     `;
   };
 
+  const handleFilterInputChange = (id, property, value) => {
+    setFilterForms((prevForms) =>
+      prevForms.map((form) =>
+        form.id === id
+          ? { ...form, filter: { ...form.filter, [property]: value } }
+          : form
+      )
+    );
+  };
   const Filters = ({ strategyFilters, initialValues, handleInputChange }) => {
     return html`
       <div class="filters-section">
@@ -351,7 +368,12 @@ const Form = (props) => {
                     <${FilterOption}
                       option=${option}
                       value=${initialValues[option.property] || ""}
-                      onInputChange=${handleInputChange}
+                      onInputChange=${(name, value) =>
+                        handleFilterInputChange(
+                          filter.id,
+                          option.property,
+                          value
+                        )}
                     />
                   `
               )}

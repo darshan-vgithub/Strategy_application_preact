@@ -1,11 +1,15 @@
 import { html, useState } from "https://esm.sh/htm/preact/standalone";
 
 export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
-  const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState(form.filter.class || ""); // Set initial class from props
 
   // Handler for selecting a filter from the dropdown
   const handleFilterSelect = (e) => {
-    setSelectedFilter(e.target.value);
+    const filterClass = e.target.value;
+    setSelectedFilter(filterClass);
+
+    // Initialize filter values based on selected filter
+    handleFilterInputChange(form.id, "class", filterClass);
   };
 
   // Styles
@@ -20,10 +24,6 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
 
   const formGroupStyle = {
     marginBottom: "16px",
-  };
-
-  const filterOptionStyle = {
-    marginBottom: "12px",
   };
 
   const filterOptionLabelStyle = {
@@ -49,17 +49,6 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
     fontSize: "16px",
   };
 
-  const filterGroupStyle = {
-    marginBottom: "24px",
-  };
-
-  const filterTitleStyle = {
-    fontSize: "18px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "12px",
-  };
-
   return html`
     <div style=${formContainerStyle}>
       <div style=${formGroupStyle}>
@@ -71,6 +60,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
           name="filter_type"
           class="form-select"
           style=${selectStyle}
+          value=${selectedFilter}
           onChange=${handleFilterSelect}
         >
           <option value="">Select Filter</option>
@@ -82,8 +72,8 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
 
       ${selectedFilter === "market_cap" &&
       html`
-        <div style=${filterGroupStyle}>
-          <h4 style=${filterTitleStyle}>Market Cap Filter</h4>
+        <div>
+          <h4 style=${filterOptionLabelStyle}>Market Cap Filter</h4>
           <div style=${formGroupStyle}>
             <label
               for="min_market_cap_${form.id}"
@@ -110,8 +100,8 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
       `}
       ${selectedFilter === "generic_momentum" &&
       html`
-        <div style=${filterGroupStyle}>
-          <h4 style=${filterTitleStyle}>Generic Momentum Filter</h4>
+        <div>
+          <h4 style=${filterOptionLabelStyle}>Generic Momentum Filter</h4>
           <div style=${formGroupStyle}>
             <label
               for="calendar_generic_${form.id}"
@@ -185,8 +175,8 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
       `}
       ${selectedFilter === "positive_movement" &&
       html`
-        <div style=${filterGroupStyle}>
-          <h4 style=${filterTitleStyle}>Positive Movement Filter</h4>
+        <div>
+          <h4 style=${filterOptionLabelStyle}>Positive Movement Filter</h4>
           <div style=${formGroupStyle}>
             <label
               for="calendar_positive_${form.id}"
