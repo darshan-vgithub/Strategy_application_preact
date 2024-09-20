@@ -18,10 +18,8 @@
         useState,
       } from "https://esm.sh/htm/preact/standalone";
       import { Form } from "./form.js";
-      import { AddFilterButton } from "./AddFilterButton.js";
       import { FilterForm } from "./FilterForm.js";
       import { Toast } from "./Toast.js"; // Import the Toast component
-      import { AddCustomFilterButton } from "./AddCustomFiltersButton.js";
       import { CustomFilterForm } from "./CustomFilterForm.js"; // Import CustomFilterForm
 
       const strategies = {
@@ -62,39 +60,6 @@
           }
         };
 
-        const handleAddFilter = () => {
-          setFilterForms((prevForms) => [
-            ...prevForms,
-            { id: Date.now(), filter: {} },
-          ]);
-          setToastMessage("Filter added successfully!");
-          setToastType("success");
-          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-        };
-
-        const handleAddCustomFilter = () => {
-          setCustomFilters((prev) => [
-            ...prev,
-            {
-              id: Date.now(),
-              name: "",
-              calendar: "",
-              lookUpWindow: "",
-              returnSize: "",
-            },
-          ]);
-          setToastMessage("Custom filter added successfully!");
-          setToastType("success");
-          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-        };
-
-        const handleRemoveCustomFilter = (id) => {
-          setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
-          setToastMessage("Custom filter removed successfully!");
-          setToastType("error");
-          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-        };
-
         const handleDeleteFilter = (id) => {
           setFilterForms((prevForms) =>
             prevForms.filter((form) => form.id !== id)
@@ -112,39 +77,6 @@
             filters=${strategyData.filters || []}
             onStrategyNameChange=${handleStrategyNameChange}
           />
-
-          <!-- Add Filters Button -->
-          <${AddFilterButton} onClick=${handleAddFilter} />
-
-          <!-- Render Filter Forms -->
-          <div>
-            ${filterForms.map(
-              (form) => html`
-                <${FilterForm}
-                  key=${form.id}
-                  form=${form}
-                  handleFilterInputChange=${() => {}}
-                  handleDelete=${() => handleDeleteFilter(form.id)}
-                />
-              `
-            )}
-          </div>
-
-          <!-- Custom Filters Section -->
-          <div>
-            <${AddCustomFilterButton} onClick=${handleAddCustomFilter} />
-            ${customFilters.map(
-              (filter) => html`
-                <!-- Render Custom Filter Form -->
-                <${CustomFilterForm}
-                  key=${filter.id}
-                  filter=${filter}
-                  onRemove=${() => handleRemoveCustomFilter(filter.id)}
-                />
-              `
-            )}
-          </div>
-
           <!-- Toast Notifications -->
           <${Toast} message=${toastMessage} type=${toastType} />
         `;
