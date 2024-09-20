@@ -205,26 +205,44 @@ const Form = (props) => {
     setCustomFilters((prevCustomFilters) => [...prevCustomFilters, filter]);
   };
 
+  console.log("Filter Forms:", filterForms);
+  console.log("Custom Filters:", customFilters);
+
   const generateJSON = () => {
     const allFilters = [
+      // Capture strategy filters
       ...strategyFilters.map((filter) => ({
         class: filter.class,
-        options: filter.options.map((option) => ({
-          property: option.property,
-          value: initialValues[option.property] || "",
-        })),
+        options: filter.options
+          .map((option) => ({
+            property: option.property,
+            value: initialValues[option.property] || "", // Capture the initial values
+          }))
+          .filter((opt) => opt.value !== ""), // Only include options with values
       })),
+
+      // Capture custom filters
       ...customFilters.map((customFilter) => ({
-        name: customFilter.name,
-        calendar: customFilter.calendar,
-        lookUpWindow: customFilter.lookUpWindow,
-        returnSize: customFilter.returnSize,
+        class: "CustomFilter",
+        options: [
+          { property: "name", value: customFilter.name || "" },
+          { property: "calendar", value: customFilter.calendar || "" },
+          { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
+          { property: "returnSize", value: customFilter.returnSize || "" },
+        ].filter((opt) => opt.value !== ""), // Only include options with values
       })),
+
+      // Capture added filters
       ...filterForms.map((form) => ({
-        filterId: form.id,
-        ...form.filter, // Make sure to include the entire filter structure
+        class: form.filter.class,
+        options: Object.keys(form.filter)
+          .map((property) => ({
+            property,
+            value: form.filter[property] || "", // Make sure to reference the correct property
+          }))
+          .filter((opt) => opt.value !== ""), // Only include options with values
       })),
-    ];
+    ].filter((filter) => filter.options && filter.options.length > 0); // Ensure options is defined and has length
 
     const formData = {
       strategyName,
@@ -238,21 +256,23 @@ const Form = (props) => {
   };
 
   const handleAddFilter = () => {
-    const newFilter = {
-      id: Date.now(),
-      filter: {
-        class: "YourFilterClass", // Set the appropriate class name
-        options: settings.filters.map((filter) => ({
-          property: filter.options[0].property, // Add initial properties
-          value: "", // Initialize with empty value
-        })),
+    const newId = Date.now(); // Unique ID for the new filter
+    setFilterForms((prevForms) => [
+      ...prevForms,
+      {
+        id: newId,
+        filter: {
+          class: "",
+          min_market_cap: "",
+          calendar_generic: "",
+          lookup_window_generic: "",
+          return_size_generic: "",
+          calendar_positive: "",
+          lookup_window_positive: "",
+          positive_return_size: "",
+        },
       },
-    };
-
-    setFilterForms((prevForms) => [...prevForms, newFilter]);
-    setToastMessage("Filter added successfully!");
-    setToastType("success");
-    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+    ]);
   };
 
   const handleAddCustomFilter = () => {
@@ -346,15 +366,17 @@ const Form = (props) => {
     `;
   };
 
-  const handleFilterInputChange = (id, property, value) => {
-    setFilterForms((prevForms) =>
-      prevForms.map((form) =>
-        form.id === id
-          ? { ...form, filter: { ...form.filter, [property]: value } }
-          : form
-      )
+  const handleFilterInputChange = (id, field, value) => {
+    setFilters((prevFilters) =>
+      prevFilters.map((filter) => {
+        if (filter.id === id) {
+          return { ...filter, [field]: value };
+        }
+        return filter;
+      })
     );
   };
+
   const Filters = ({ strategyFilters, initialValues, handleInputChange }) => {
     return html`
       <div class="filters-section">

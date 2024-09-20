@@ -1,18 +1,14 @@
 import { html, useState } from "https://esm.sh/htm/preact/standalone";
 
 export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
-  const [selectedFilter, setSelectedFilter] = useState(form.filter.class || ""); // Set initial class from props
+  const [selectedFilter, setSelectedFilter] = useState(form.filter.class || "");
 
-  // Handler for selecting a filter from the dropdown
   const handleFilterSelect = (e) => {
     const filterClass = e.target.value;
     setSelectedFilter(filterClass);
-
-    // Initialize filter values based on selected filter
     handleFilterInputChange(form.id, "class", filterClass);
   };
 
-  // Styles
   const formContainerStyle = {
     maxWidth: "800px",
     margin: "0 auto",
