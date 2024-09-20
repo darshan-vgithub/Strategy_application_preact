@@ -206,21 +206,34 @@ const Form = (props) => {
   };
 
   const generateJSON = () => {
-    const formData = {
-      strategyName,
-      class: selectedClass,
-      universe: selectedUniverse,
-      filters: strategyFilters.map((filter) => ({
+    const allFilters = [
+      ...strategyFilters.map((filter) => ({
         class: filter.class,
         options: Object.keys(initialValues).map((key) => ({
           property: key,
           value: initialValues[key],
         })),
       })),
-      customFilters, // Include custom filters in the JSON
+      ...customFilters.map((customFilter) => ({
+        name: customFilter.name,
+        calendar: customFilter.calendar,
+        lookUpWindow: customFilter.lookUpWindow,
+        returnSize: customFilter.returnSize,
+      })),
+      ...filterForms.map((form) => ({
+        filterId: form.id,
+        // Add other properties as needed based on FilterForm
+      })),
+    ];
+
+    const formData = {
+      strategyName,
+      class: selectedClass,
+      universe: selectedUniverse,
+      filters: allFilters,
     };
+
     console.log("Generated JSON:", JSON.stringify(formData, null, 2));
-    // Display JSON in the UI
     showToast("JSON data generated. Check console for details.", "success");
   };
 
@@ -262,6 +275,20 @@ const Form = (props) => {
     setToastMessage("Filter deleted successfully!");
     setToastType("error");
     setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  };
+
+  const onFilterChange = (id, e, field) => {
+    const value = e.target.value;
+    setCustomFilters((prev) =>
+      prev.map((filter) =>
+        filter.id === id
+          ? {
+              ...filter,
+              [field]: value,
+            }
+          : filter
+      )
+    );
   };
 
   const FilterOption = ({ option, value = "", onInputChange }) => {
@@ -429,6 +456,8 @@ const Form = (props) => {
                 key=${filter.id}
                 filter=${filter}
                 onRemove=${() => handleRemoveCustomFilter(filter.id)}
+                onFilterChange=${(e, field) =>
+                  onFilterChange(filter.id, e, field)}
               />
             `
           )}

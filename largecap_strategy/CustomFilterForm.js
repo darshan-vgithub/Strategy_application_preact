@@ -13,10 +13,6 @@ const formGroupStyle = {
   marginBottom: "16px",
 };
 
-const filterOptionStyle = {
-  marginBottom: "12px",
-};
-
 const filterOptionLabelStyle = {
   display: "block",
   marginBottom: "6px",
@@ -38,17 +34,6 @@ const inputStyle = {
   border: "1px solid #ddd",
   borderRadius: "4px",
   fontSize: "16px",
-};
-
-const filterGroupStyle = {
-  marginBottom: "24px",
-};
-
-const filterTitleStyle = {
-  fontSize: "18px",
-  fontWeight: "600",
-  color: "#333",
-  marginBottom: "12px",
 };
 
 export function CustomFilterForm({ filter, onRemove, onFilterChange }) {
