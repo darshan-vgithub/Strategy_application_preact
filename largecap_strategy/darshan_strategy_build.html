@@ -20,65 +20,49 @@
       import { Form } from "./form.js";
       import { FilterForm } from "./FilterForm.js";
       import { Toast } from "./Toast.js"; // Import the Toast component
-      import { CustomFilterForm } from "./CustomFilterForm.js"; // Import CustomFilterForm
-
-      const strategies = {
-        "Example Strategy": {
-          class: "ExampleClass",
-          filters: [],
-          universe: "ExampleUniverse",
-        },
-      };
+      import strategies from "./strategies.json" with { type: "json" };
 
       function App() {
-        const [strategyName, setStrategyName] = useState("");
         const [strategyData, setStrategyData] = useState({
+          label: "",
+          universe: "",
           class: "",
           filters: [],
-          universe: "",
         });
-        const [availableFilters, setAvailableFilters] = useState([]);
-        const [filterForms, setFilterForms] = useState([]);
+
         const [toastMessage, setToastMessage] = useState("");
         const [toastType, setToastType] = useState("success"); // 'success' or 'error'
-        const [customFilters, setCustomFilters] = useState([]); // Track custom filters
 
-        const handleStrategyNameChange = (e) => {
-          const name = e.target.value.trim();
-          setStrategyName(name);
-
-          if (strategies[name]) {
+        const handleChange = (ev) => {
+          const val = ev.target.value;
+          let prop = ev.target.dataset['prop']
+          if ('label' === prop && strategies.hasOwnProperty(val)) {
+            const strategy = strategies[val];
             setStrategyData({
-              class: strategies[name].class || "",
-              filters: strategies[name].filters || [],
-              universe: strategies[name].universe || "",
+              label: val,
+              class: strategy.class || "",
+              filters: strategy.filters || [],
+              universe: strategy.universe || "",
             });
-            setAvailableFilters(strategies[name].filters || []);
           } else {
-            setStrategyData({ class: "", filters: [], universe: "" });
-            setAvailableFilters([]);
+            const newState = {};
+            if( prop === 'class_name')
+              prop = 'class'
+            newState[prop] = val;
+            setStrategyData({
+              ...strategyData, ...newState
+            });
           }
-        };
-
-        const handleDeleteFilter = (id) => {
-          setFilterForms((prevForms) =>
-            prevForms.filter((form) => form.id !== id)
-          );
-          setToastMessage("Filter deleted successfully!");
-          setToastType("error");
-          setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
         };
 
         return html`
           <${Form}
-            strategy=${strategyName}
+            label=${strategyData.label}
             class_name=${strategyData.class || ""}
             universe=${strategyData.universe || ""}
             filters=${strategyData.filters || []}
-            onStrategyNameChange=${handleStrategyNameChange}
+            onStateChange=${handleChange}
           />
-          <!-- Toast Notifications -->
-          <${Toast} message=${toastMessage} type=${toastType} />
         `;
       }
 

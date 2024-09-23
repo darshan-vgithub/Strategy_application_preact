@@ -3,15 +3,14 @@ import {
   useState,
   useEffect,
 } from "https://esm.sh/htm/preact/standalone";
+
 import { showToast } from "./Toast.js";
 import { AddFilterButton } from "./AddFilterButton.js";
-import { AddCustomFilterButton } from "./AddCustomFiltersButton.js";
 import { FilterForm } from "./FilterForm.js";
-import { CustomFilterForm } from "./CustomFilterForm.js";
 import { Toast } from "./Toast.js"; // Import the Toast component
 
 const settings = {
-  classes: ["CruiseMomentum", "None"],
+  classes: ["CruiseMomentum"],
   universes: [
     "Mcap_500",
     "Nifty_Finance",
@@ -63,260 +62,83 @@ const settings = {
   ],
 };
 
-// Fetch strategy JSON data
-const fetchStrategiesData = async () => {
-  const response = await fetch("/largecap_strategy/strategies.json");
-  const data = await response.json();
-  return data;
-};
-
 const Form = (props) => {
-  const { strategy, class_name, universe, filters, onStrategyNameChange } =
-    props;
-  const [selectedClass, setSelectedClass] = useState("");
-  const [selectedUniverse, setSelectedUniverse] = useState("");
-  const [strategyFilters, setFilters] = useState([]);
-  const [strategyName, setStrategyName] = useState(strategy);
-  const [initialValues, setInitialValues] = useState({});
-  const [strategiesData, setStrategiesData] = useState({});
-  // const [customFilters, setCustomFilters] = useState([]);
-  const [showFilterForm, setShowFilterForm] = useState(false); // For toggling the filter form
-  // const [showCustomFilterForm, setShowCustomFilterForm] = useState(false); // For custom filter form
-
-  // States for filters and toasts
-  const [filterForms, setFilterForms] = useState([]); // State to hold filter forms
+  const { label, class_name, universe, filters, onStateChange } = props;
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
 
-  useEffect(() => {
-    const initializeForm = async () => {
-      const data = await fetchStrategiesData();
-      setStrategiesData(data);
-
-      const filtersForClass =
-        filters.length > 0
-          ? filters
-          : settings.filters.filter((filter) => filter.class === class_name);
-
-      setFilters(filtersForClass);
-
-      const values = filtersForClass.reduce((acc, filter) => {
-        filter.options.forEach((option) => {
-          if (option.property) {
-            acc[option.property] = ""; // Initialize with empty value
-          }
-        });
-        return acc;
-      }, {});
-
-      setSelectedClass(class_name || "None");
-      setSelectedUniverse(universe || "");
-      setInitialValues(values);
-    };
-
-    initializeForm();
-  }, [class_name, universe, filters]);
-
-  useEffect(() => {
-    if (strategyName && strategiesData[strategyName]) {
-      const strategyData = strategiesData[strategyName];
-
-      const updatedValues = {};
-      const updatedFilters = [];
-
-      if (Array.isArray(strategyData.filters)) {
-        strategyData.filters.forEach((filter) => {
-          const filterDefinition = settings.filters.find(
-            (f) => f.class === filter.filter
-          );
-          if (filterDefinition) {
-            updatedFilters.push(filterDefinition);
-
-            filter.options.forEach((optionObject) => {
-              Object.keys(optionObject).forEach((property) => {
-                if (property) {
-                  updatedValues[property] = optionObject[property]; // Set value
-                }
-              });
-            });
-          }
-        });
-      }
-
-      setFilters(updatedFilters);
-      setInitialValues((prevValues) => ({
-        ...prevValues,
-        ...updatedValues, // Merge new values with existing ones
-      }));
-      setSelectedClass(strategyData.class || "None"); // Ensure class is set
-      setSelectedUniverse(strategyData.universe || ""); // Prefill universe
-    } else if (strategyName) {
-      showToast("Strategy not found!", "error"); // Show custom toast if strategy not found
-    }
-  }, [strategyName, strategiesData]);
-
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
-    setStrategyName(name);
-    onStrategyNameChange(e);
+    // setStrategyName(name);
+    onStateChange(e);
   };
 
-  const onClassInput = (e) => {
-    const selected = e.target.value;
-    setSelectedClass(selected);
+  // const generateJSON = () => {
+  //   const allFilters = [
+  //     ...strategyFilters.map((filter) => ({
+  //       class: filter.class,
+  //       options: filter.options
+  //         .map((option) => ({
+  //           property: option.property,
+  //           value: initialValues[option.property] || "", // Capture initial values
+  //         }))
+  //         .filter((opt) => opt.value !== ""),
+  //     })),
+  //     // ...customFilters.map((customFilter) => ({
+  //     //   class: "CustomFilter",
+  //     //   options: [
+  //     //     { property: "name", value: customFilter.name || "" },
+  //     //     { property: "calendar", value: customFilter.calendar || "" },
+  //     //     { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
+  //     //     { property: "returnSize", value: customFilter.returnSize || "" },
+  //     //   ].filter((opt) => opt.value !== ""),
+  //     // })),
+  //     ...filterForms.map((form) => ({
+  //       class: form.filter.class, // Ensure this is correctly set
+  //       options: Object.keys(form.filter)
+  //         .map((property) => ({
+  //           property,
+  //           value: form.filter[property] || "", // Reference correct property
+  //         }))
+  //         .filter((opt) => opt.value !== ""),
+  //     })),
+  //   ].filter((filter) => filter.options && filter.options.length > 0);
 
-    if (selected === "None") {
-      setFilters([]);
-      setInitialValues({});
-    } else {
-      const filtersForClass = settings.filters.filter(
-        (filter) => filter.class === selected
-      );
-      setFilters(filtersForClass.length ? filtersForClass : []);
+  //   const formData = {
+  //     strategyName,
+  //     class: selectedClass,
+  //     universe: selectedUniverse,
+  //     filters: allFilters,
+  //   };
 
-      const values = filtersForClass.reduce((acc, filter) => {
-        filter.options.forEach((option) => {
-          if (option.property) {
-            acc[option.property] = ""; // Initialize with empty value
-          }
-        });
-        return acc;
-      }, {});
-      setInitialValues(values);
-    }
-  };
-
-  const onUniverseInput = (e) => {
-    setSelectedUniverse(e.target.value);
-  };
-
-  const handleInputChange = (name, value) => {
-    setInitialValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-  };
-
-  const addFilter = (filter) => {
-    setFilters((prevFilters) => [...prevFilters, filter]);
-  };
-
-  // const addCustomFilter = (filter) => {
-  //   setCustomFilters((prevCustomFilters) => [...prevCustomFilters, filter]);
+  //   console.log("Generated JSON:", JSON.stringify(formData, null, 2));
+  //   showToast("JSON data generated. Check console for details.", "success");
   // };
 
-  console.log("Filter Forms:", filterForms);
-  // console.log("Custom Filters:", customFilters);
-
-  const generateJSON = () => {
-    const allFilters = [
-      ...strategyFilters.map((filter) => ({
-        class: filter.class,
-        options: filter.options
-          .map((option) => ({
-            property: option.property,
-            value: initialValues[option.property] || "", // Capture initial values
-          }))
-          .filter((opt) => opt.value !== ""),
-      })),
-      // ...customFilters.map((customFilter) => ({
-      //   class: "CustomFilter",
-      //   options: [
-      //     { property: "name", value: customFilter.name || "" },
-      //     { property: "calendar", value: customFilter.calendar || "" },
-      //     { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
-      //     { property: "returnSize", value: customFilter.returnSize || "" },
-      //   ].filter((opt) => opt.value !== ""),
-      // })),
-      ...filterForms.map((form) => ({
-        class: form.filter.class, // Ensure this is correctly set
-        options: Object.keys(form.filter)
-          .map((property) => ({
-            property,
-            value: form.filter[property] || "", // Reference correct property
-          }))
-          .filter((opt) => opt.value !== ""),
-      })),
-    ].filter((filter) => filter.options && filter.options.length > 0);
-
-    const formData = {
-      strategyName,
-      class: selectedClass,
-      universe: selectedUniverse,
-      filters: allFilters,
-    };
-
-    console.log("Generated JSON:", JSON.stringify(formData, null, 2));
-    showToast("JSON data generated. Check console for details.", "success");
-  };
-
   const handleAddFilter = () => {
-    debugger;
-    const newId = Date.now(); // Unique ID for the new filter
-    setFilterForms((prevForms) => [
-      ...prevForms,
-      {
-        id: newId,
-        filter: {
-          class: "",
-          min_market_cap: "",
-          calendar_generic: "",
-          lookup_window_generic: "",
-          return_size_generic: "",
-          calendar_positive: "",
-          lookup_window_positive: "",
-          positive_return_size: "",
-        },
-      },
-    ]);
+    // setFilters((prevForms) => [
+    //   ...prevForms,
+    //   {
+    //     filter: "",
+    //     options: [],
+    //   },
+    // ]);
     setToastMessage(" added filter successfully!");
     setToastType("success");
     setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
   };
 
-  // const handleAddCustomFilter = () => {
-  //   setCustomFilters((prev) => [
-  //     ...prev,
-  //     {
-  //       id: Date.now(),
-  //       name: "",
-  //       calendar: "",
-  //       lookUpWindow: "",
-  //       returnSize: "",
-  //     },
-  //   ]);
-  //   setToastMessage("Custom filter added successfully!");
-  //   setToastType("success");
-  //   setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-  // };
-
-  // const handleRemoveCustomFilter = (id) => {
-  //   setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
-  //   setToastMessage("Custom filter removed successfully!");
-  //   setToastType("error");
-  //   setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-  // };
-
   const handleDeleteFilter = (id) => {
-    setFilterForms((prevForms) => prevForms.filter((form) => form.id !== id));
+    /**
+     * Deletes a filter form with the given id and shows a success toast message.
+     * @param {number} id The id of the filter form to delete.
+     */
+    // TODO
+    return;
     setToastMessage("Filter deleted successfully!");
     setToastType("error");
     setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
   };
-
-  // const onFilterChange = (id, e, field) => {
-  //   const value = e.target.value;
-  //   setCustomFilters((prev) =>
-  //     prev.map((filter) =>
-  //       filter.id === id
-  //         ? {
-  //             ...filter,
-  //             [field]: value,
-  //           }
-  //         : filter
-  //     )
-  //   );
-  // };
 
   const FilterOption = ({ option, value = "", onInputChange }) => {
     if (option.type === "calendar") {
@@ -365,52 +187,30 @@ const Form = (props) => {
     `;
   };
 
-  const handleFilterInputChange = (id, field, value) => {
-    setFilterForms((prevForms) =>
-      prevForms.map((form) => {
-        if (form.id === id) {
-          return {
-            ...form,
-            filter: {
-              ...form.filter,
-              [field]: value, // Update the specific field for the filter
-            },
-          };
-        }
-        return form;
-      })
-    );
-  };
-
   const Filters = ({ strategyFilters, initialValues, handleInputChange }) => {
-    return html`
-      <div class="filters-section">
-        ${strategyFilters.map(
-          (filter) =>
-            html`
-              <h4>${filter.label}</h4>
-              ${filter.options.map(
-                (option) =>
-                  html`
-                    <${FilterOption}
-                      option=${option}
-                      value=${initialValues[option.property] || ""}
-                      onInputChange=${(name, value) =>
-                        handleFilterInputChange(
-                          filter.id,
-                          option.property,
-                          value
-                        )}
-                    />
-                  `
-              )}
-            `
-        )}
-      </div>
-    `;
+    // return html`
+    //   <div class="filters-section">
+    //     ${strategyFilters.map(
+    //       (filter) =>
+    //         html`
+    //           <h4>${filter.label}</h4>
+    //           ${filter.options.map(
+    //             (option) =>
+    //               html`
+    //                 <${FilterOption}
+    //                   option=${option}
+    //                   value=${initialValues[option.property] || ""}
+    //                 />
+    //               `
+    //           )}
+    //         `
+    //     )}
+    //   </div>
+    // `;
   };
 
   return html`
+    <textarea rows="10" cols="80">${JSON.stringify(props)}</textarea>
     <div class="form-container" style=${formContainerStyle}>
       <h2>Strategy Form</h2>
       <div class="form-group" style=${formGroupStyle}>
@@ -419,8 +219,9 @@ const Form = (props) => {
           type="text"
           id="strategyName"
           name="strategyName"
-          value=${strategyName || ""}
-          onInput=${onStrategyNameInput}
+          data-prop="label"
+          value=${label || ""}
+          onInput=${onStateChange}
           style=${inputStyle}
         />
       </div>
@@ -430,17 +231,18 @@ const Form = (props) => {
         <select
           id="class"
           name="class"
-          value=${selectedClass}
-          onInput=${onClassInput}
+          data-prop="class_name"
+          value=${class_name}
+          onInput=${onStateChange}
           style=${selectStyle}
         >
-          <option value="None">None</option>
+          <option value="">None</option>
           ${settings.classes.map(
             (className) =>
               html`
                 <option
                   value="${className}"
-                  selected=${selectedClass === className}
+                  selected=${class_name === className}
                 >
                   ${className}
                 </option>
@@ -454,20 +256,16 @@ const Form = (props) => {
         <select
           id="universe"
           name="universe"
-          value=${selectedUniverse}
-          onInput=${onUniverseInput}
+          data-prop="universe"
+          value=${universe}
+          onInput=${onStateChange}
           style=${selectStyle}
         >
           <option value="">Select Universe</option>
           ${settings.universes.map(
-            (universe) =>
+            (u) =>
               html`
-                <option
-                  value="${universe}"
-                  selected=${selectedUniverse === universe}
-                >
-                  ${universe}
-                </option>
+                <option value="${u}" selected=${universe === u}>${u}</option>
               `
           )}
         </select>
@@ -475,29 +273,12 @@ const Form = (props) => {
 
       <div class="filters-section" style=${filterGroupStyle}>
         <h3 style=${filterTitleStyle}>Filters</h3>
-        <${Filters}
-          strategyFilters=${strategyFilters}
-          initialValues=${initialValues}
-          handleInputChange=${handleInputChange}
-        />
+        <${Filters} strategyFilters=${filters} />
         <${AddFilterButton} onClick=${handleAddFilter} />
-        <div>
-          ${filterForms.map(
-            (form) => html`
-              <${FilterForm} key=${form.id} form=${form}
-              handleFilterInputChange=${handleFilterInputChange} // Pass this
-              prop handleDelete=${() => handleDeleteFilter(form.id)} />
-            `
-          )}
-        </div>
       </div>
 
       <div class="form-group" style=${formGroupStyle}>
-        <button
-          class="generate-json-btn"
-          style=${inputStyle}
-          onClick=${generateJSON}
-        >
+        <button class="generate-json-btn" style=${inputStyle}>
           Generate JSON
         </button>
       </div>
