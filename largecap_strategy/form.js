@@ -268,6 +268,9 @@ const Form = (props) => {
         },
       },
     ]);
+    setToastMessage(" added filter successfully!");
+    setToastType("success");
+    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
   };
 
   const handleAddCustomFilter = () => {
