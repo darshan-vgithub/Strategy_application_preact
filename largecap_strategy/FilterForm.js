@@ -123,6 +123,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               <option value="BCME">BCME</option>
             </select>
           </div>
+
           <div style=${formGroupStyle}>
             <label
               for="lookup_window_generic_${form.id}"
@@ -145,6 +146,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
                 )}
             />
           </div>
+
           <div style=${formGroupStyle}>
             <label
               for="return_size_generic_${form.id}"
@@ -198,6 +200,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
               <option value="BCME">BCME</option>
             </select>
           </div>
+
           <div style=${formGroupStyle}>
             <label
               for="lookup_window_positive_${form.id}"
@@ -220,6 +223,7 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
                 )}
             />
           </div>
+
           <div style=${formGroupStyle}>
             <label
               for="positive_return_size_${form.id}"
@@ -247,9 +251,9 @@ export function FilterForm({ form, handleFilterInputChange, handleDelete }) {
 
       <button
         onClick=${() => handleDelete(form.id)}
-        style="background-color: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 20px;"
+        style="background-color: #d9534f; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600;"
       >
-        <i class="fa-solid fa-trash"></i>
+        Delete Filter
       </button>
     </div>
   `;

@@ -210,18 +210,18 @@ const Form = (props) => {
 
   const generateJSON = () => {
     const allFilters = [
-      // Capture strategy filters
+      // Strategy filters
       ...strategyFilters.map((filter) => ({
         class: filter.class,
         options: filter.options
           .map((option) => ({
             property: option.property,
-            value: initialValues[option.property] || "", // Capture the initial values
+            value: initialValues[option.property] || "", // Capture initial values
           }))
           .filter((opt) => opt.value !== ""), // Only include options with values
       })),
 
-      // Capture custom filters
+      // Custom filters
       ...customFilters.map((customFilter) => ({
         class: "CustomFilter",
         options: [
@@ -232,17 +232,17 @@ const Form = (props) => {
         ].filter((opt) => opt.value !== ""), // Only include options with values
       })),
 
-      // Capture added filters
+      // Added filters
       ...filterForms.map((form) => ({
         class: form.filter.class,
         options: Object.keys(form.filter)
           .map((property) => ({
             property,
-            value: form.filter[property] || "", // Make sure to reference the correct property
+            value: form.filter[property] || "", // Reference correct property
           }))
           .filter((opt) => opt.value !== ""), // Only include options with values
       })),
-    ].filter((filter) => filter.options && filter.options.length > 0); // Ensure options is defined and has length
+    ].filter((filter) => filter.options && filter.options.length > 0); // Ensure options are defined
 
     const formData = {
       strategyName,
@@ -367,12 +367,12 @@ const Form = (props) => {
   };
 
   const handleFilterInputChange = (id, field, value) => {
-    setFilters((prevFilters) =>
-      prevFilters.map((filter) => {
-        if (filter.id === id) {
-          return { ...filter, [field]: value };
+    setFilterForms((prevForms) =>
+      prevForms.map((form) => {
+        if (form.id === id) {
+          return { ...form, filter: { ...form.filter, [field]: value } };
         }
-        return filter;
+        return form;
       })
     );
   };
