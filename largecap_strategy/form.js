@@ -79,9 +79,9 @@ const Form = (props) => {
   const [strategyName, setStrategyName] = useState(strategy);
   const [initialValues, setInitialValues] = useState({});
   const [strategiesData, setStrategiesData] = useState({});
-  const [customFilters, setCustomFilters] = useState([]);
+  // const [customFilters, setCustomFilters] = useState([]);
   const [showFilterForm, setShowFilterForm] = useState(false); // For toggling the filter form
-  const [showCustomFilterForm, setShowCustomFilterForm] = useState(false); // For custom filter form
+  // const [showCustomFilterForm, setShowCustomFilterForm] = useState(false); // For custom filter form
 
   // States for filters and toasts
   const [filterForms, setFilterForms] = useState([]); // State to hold filter forms
@@ -201,12 +201,12 @@ const Form = (props) => {
     setFilters((prevFilters) => [...prevFilters, filter]);
   };
 
-  const addCustomFilter = (filter) => {
-    setCustomFilters((prevCustomFilters) => [...prevCustomFilters, filter]);
-  };
+  // const addCustomFilter = (filter) => {
+  //   setCustomFilters((prevCustomFilters) => [...prevCustomFilters, filter]);
+  // };
 
   console.log("Filter Forms:", filterForms);
-  console.log("Custom Filters:", customFilters);
+  // console.log("Custom Filters:", customFilters);
 
   const generateJSON = () => {
     const allFilters = [
@@ -219,15 +219,15 @@ const Form = (props) => {
           }))
           .filter((opt) => opt.value !== ""),
       })),
-      ...customFilters.map((customFilter) => ({
-        class: "CustomFilter",
-        options: [
-          { property: "name", value: customFilter.name || "" },
-          { property: "calendar", value: customFilter.calendar || "" },
-          { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
-          { property: "returnSize", value: customFilter.returnSize || "" },
-        ].filter((opt) => opt.value !== ""),
-      })),
+      // ...customFilters.map((customFilter) => ({
+      //   class: "CustomFilter",
+      //   options: [
+      //     { property: "name", value: customFilter.name || "" },
+      //     { property: "calendar", value: customFilter.calendar || "" },
+      //     { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
+      //     { property: "returnSize", value: customFilter.returnSize || "" },
+      //   ].filter((opt) => opt.value !== ""),
+      // })),
       ...filterForms.map((form) => ({
         class: form.filter.class, // Ensure this is correctly set
         options: Object.keys(form.filter)
@@ -251,6 +251,7 @@ const Form = (props) => {
   };
 
   const handleAddFilter = () => {
+    debugger;
     const newId = Date.now(); // Unique ID for the new filter
     setFilterForms((prevForms) => [
       ...prevForms,
@@ -273,28 +274,28 @@ const Form = (props) => {
     setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
   };
 
-  const handleAddCustomFilter = () => {
-    setCustomFilters((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: "",
-        calendar: "",
-        lookUpWindow: "",
-        returnSize: "",
-      },
-    ]);
-    setToastMessage("Custom filter added successfully!");
-    setToastType("success");
-    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-  };
+  // const handleAddCustomFilter = () => {
+  //   setCustomFilters((prev) => [
+  //     ...prev,
+  //     {
+  //       id: Date.now(),
+  //       name: "",
+  //       calendar: "",
+  //       lookUpWindow: "",
+  //       returnSize: "",
+  //     },
+  //   ]);
+  //   setToastMessage("Custom filter added successfully!");
+  //   setToastType("success");
+  //   setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  // };
 
-  const handleRemoveCustomFilter = (id) => {
-    setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
-    setToastMessage("Custom filter removed successfully!");
-    setToastType("error");
-    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
-  };
+  // const handleRemoveCustomFilter = (id) => {
+  //   setCustomFilters((prev) => prev.filter((filter) => filter.id !== id));
+  //   setToastMessage("Custom filter removed successfully!");
+  //   setToastType("error");
+  //   setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  // };
 
   const handleDeleteFilter = (id) => {
     setFilterForms((prevForms) => prevForms.filter((form) => form.id !== id));
@@ -303,19 +304,19 @@ const Form = (props) => {
     setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
   };
 
-  const onFilterChange = (id, e, field) => {
-    const value = e.target.value;
-    setCustomFilters((prev) =>
-      prev.map((filter) =>
-        filter.id === id
-          ? {
-              ...filter,
-              [field]: value,
-            }
-          : filter
-      )
-    );
-  };
+  // const onFilterChange = (id, e, field) => {
+  //   const value = e.target.value;
+  //   setCustomFilters((prev) =>
+  //     prev.map((filter) =>
+  //       filter.id === id
+  //         ? {
+  //             ...filter,
+  //             [field]: value,
+  //           }
+  //         : filter
+  //     )
+  //   );
+  // };
 
   const FilterOption = ({ option, value = "", onInputChange }) => {
     if (option.type === "calendar") {
@@ -486,24 +487,6 @@ const Form = (props) => {
               <${FilterForm} key=${form.id} form=${form}
               handleFilterInputChange=${handleFilterInputChange} // Pass this
               prop handleDelete=${() => handleDeleteFilter(form.id)} />
-            `
-          )}
-        </div>
-      </div>
-
-      <div class="custom-filters-section" style=${filterGroupStyle}>
-        <h3 style=${filterTitleStyle}>Custom Filters</h3>
-        <${AddCustomFilterButton} onClick=${handleAddCustomFilter} />
-        <div>
-          ${customFilters.map(
-            (filter) => html`
-              <${CustomFilterForm}
-                key=${filter.id}
-                filter=${filter}
-                onRemove=${() => handleRemoveCustomFilter(filter.id)}
-                onFilterChange=${(e, field) =>
-                  onFilterChange(filter.id, e, field)}
-              />
             `
           )}
         </div>
