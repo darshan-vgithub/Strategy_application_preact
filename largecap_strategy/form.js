@@ -210,7 +210,6 @@ const Form = (props) => {
 
   const generateJSON = () => {
     const allFilters = [
-      // Strategy filters
       ...strategyFilters.map((filter) => ({
         class: filter.class,
         options: filter.options
@@ -218,10 +217,8 @@ const Form = (props) => {
             property: option.property,
             value: initialValues[option.property] || "", // Capture initial values
           }))
-          .filter((opt) => opt.value !== ""), // Only include options with values
+          .filter((opt) => opt.value !== ""),
       })),
-
-      // Custom filters
       ...customFilters.map((customFilter) => ({
         class: "CustomFilter",
         options: [
@@ -229,20 +226,18 @@ const Form = (props) => {
           { property: "calendar", value: customFilter.calendar || "" },
           { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
           { property: "returnSize", value: customFilter.returnSize || "" },
-        ].filter((opt) => opt.value !== ""), // Only include options with values
+        ].filter((opt) => opt.value !== ""),
       })),
-
-      // Added filters
       ...filterForms.map((form) => ({
-        class: form.filter.class,
+        class: form.filter.class, // Ensure this is correctly set
         options: Object.keys(form.filter)
           .map((property) => ({
             property,
             value: form.filter[property] || "", // Reference correct property
           }))
-          .filter((opt) => opt.value !== ""), // Only include options with values
+          .filter((opt) => opt.value !== ""),
       })),
-    ].filter((filter) => filter.options && filter.options.length > 0); // Ensure options are defined
+    ].filter((filter) => filter.options && filter.options.length > 0);
 
     const formData = {
       strategyName,
@@ -370,7 +365,13 @@ const Form = (props) => {
     setFilterForms((prevForms) =>
       prevForms.map((form) => {
         if (form.id === id) {
-          return { ...form, filter: { ...form.filter, [field]: value } };
+          return {
+            ...form,
+            filter: {
+              ...form.filter,
+              [field]: value, // Update the specific field for the filter
+            },
+          };
         }
         return form;
       })
@@ -479,12 +480,9 @@ const Form = (props) => {
         <div>
           ${filterForms.map(
             (form) => html`
-              <${FilterForm}
-                key=${form.id}
-                form=${form}
-                handleFilterInputChange=${() => {}}
-                handleDelete=${() => handleDeleteFilter(form.id)}
-              />
+              <${FilterForm} key=${form.id} form=${form}
+              handleFilterInputChange=${handleFilterInputChange} // Pass this
+              prop handleDelete=${() => handleDeleteFilter(form.id)} />
             `
           )}
         </div>
