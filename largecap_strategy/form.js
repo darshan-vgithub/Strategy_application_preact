@@ -1,13 +1,7 @@
-import {
-  html,
-  useState,
-  useEffect,
-} from "https://esm.sh/htm/preact/standalone";
-
+import { html, useState } from "https://esm.sh/htm/preact/standalone";
 import { showToast } from "./Toast.js";
 import { AddFilterButton } from "./AddFilterButton.js";
-import { FilterForm } from "./FilterForm.js";
-import { Toast } from "./Toast.js"; // Import the Toast component
+import { Toast } from "./Toast.js";
 
 const settings = {
   classes: ["CruiseMomentum"],
@@ -63,84 +57,66 @@ const settings = {
 };
 
 const Form = (props) => {
-  const { label, class_name, universe, filters, onStateChange } = props;
+  const { label, class_name, universe, onStateChange } = props;
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const [activeFilters, setActiveFilters] = useState([]);
 
   const onStrategyNameInput = (e) => {
     const name = e.target.value;
-    // setStrategyName(name);
     onStateChange(e);
+    if (name) {
+      setActiveFilters(
+        settings.filters.map((filter) => ({
+          ...filter,
+          options: filter.options.map((option) => ({ ...option, value: "" })), // Initialize with empty values
+        }))
+      );
+    } else {
+      setActiveFilters([]);
+    }
   };
-
-  // const generateJSON = () => {
-  //   const allFilters = [
-  //     ...strategyFilters.map((filter) => ({
-  //       class: filter.class,
-  //       options: filter.options
-  //         .map((option) => ({
-  //           property: option.property,
-  //           value: initialValues[option.property] || "", // Capture initial values
-  //         }))
-  //         .filter((opt) => opt.value !== ""),
-  //     })),
-  //     // ...customFilters.map((customFilter) => ({
-  //     //   class: "CustomFilter",
-  //     //   options: [
-  //     //     { property: "name", value: customFilter.name || "" },
-  //     //     { property: "calendar", value: customFilter.calendar || "" },
-  //     //     { property: "lookUpWindow", value: customFilter.lookUpWindow || "" },
-  //     //     { property: "returnSize", value: customFilter.returnSize || "" },
-  //     //   ].filter((opt) => opt.value !== ""),
-  //     // })),
-  //     ...filterForms.map((form) => ({
-  //       class: form.filter.class, // Ensure this is correctly set
-  //       options: Object.keys(form.filter)
-  //         .map((property) => ({
-  //           property,
-  //           value: form.filter[property] || "", // Reference correct property
-  //         }))
-  //         .filter((opt) => opt.value !== ""),
-  //     })),
-  //   ].filter((filter) => filter.options && filter.options.length > 0);
-
-  //   const formData = {
-  //     strategyName,
-  //     class: selectedClass,
-  //     universe: selectedUniverse,
-  //     filters: allFilters,
-  //   };
-
-  //   console.log("Generated JSON:", JSON.stringify(formData, null, 2));
-  //   showToast("JSON data generated. Check console for details.", "success");
-  // };
 
   const handleAddFilter = () => {
-    // setFilters((prevForms) => [
-    //   ...prevForms,
-    //   {
-    //     filter: "",
-    //     options: [],
-    //   },
-    // ]);
-    setToastMessage(" added filter successfully!");
+    setActiveFilters((prevFilters) => [
+      ...prevFilters,
+      { label: "New Filter", options: [] }, // Add a new empty filter
+    ]);
+    setToastMessage("Added filter successfully!");
     setToastType("success");
-    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+    setTimeout(() => setToastMessage(""), 3000);
   };
 
-  const handleDeleteFilter = (id) => {
-    /**
-     * Deletes a filter form with the given id and shows a success toast message.
-     * @param {number} id The id of the filter form to delete.
-     */
-    // TODO
-    return;
-    setToastMessage("Filter deleted successfully!");
-    setToastType("error");
-    setTimeout(() => setToastMessage(""), 3000); // Hide toast after 3 seconds
+  const handleEditFilter = (index) => {
+    console.log("Edit filter at index:", index);
+    // Implement editing logic if necessary
   };
 
-  const FilterOption = ({ option, value = "", onInputChange }) => {
+  const handleDeleteFilter = (index) => {
+    setActiveFilters(activeFilters.filter((_, i) => i !== index));
+    setToastMessage("Deleted filter successfully!");
+    setToastType("success");
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  const handleGenerateJSON = () => {
+    const jsonOutput = {
+      label,
+      class_name,
+      universe,
+      filters: activeFilters.map((filter) => ({
+        label: filter.label,
+        options: filter.options.map((option) => ({
+          property: option.property,
+          value: option.value,
+        })),
+      })),
+    };
+    console.log(JSON.stringify(jsonOutput, null, 2)); // Display in console
+    // Optionally, you can display this output in the UI
+  };
+
+  const FilterOption = ({ option, onInputChange }) => {
     if (option.type === "calendar") {
       return html`
         <div class="form-group" style=${filterOptionStyle}>
@@ -152,14 +128,17 @@ const Form = (props) => {
             name=${option.property}
             class="form-select"
             style=${selectStyle}
-            value=${value || ""}
-            onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+            value=${option.value || ""}
+            onInput=${(e) => onInputChange(option.property, e.target.value)}
           >
             <option value="">Select Calendar</option>
             ${settings.calendars.map(
               (calendar) =>
                 html`
-                  <option value="${calendar}" selected=${value === calendar}>
+                  <option
+                    value="${calendar}"
+                    selected=${option.value === calendar}
+                  >
                     ${calendar}
                   </option>
                 `
@@ -180,33 +159,53 @@ const Form = (props) => {
           name=${option.property}
           class="form-input"
           style=${inputStyle}
-          value=${value || ""}
-          onInput=${(e) => onInputChange(e.target.name, e.target.value)}
+          value=${option.value || ""}
+          onInput=${(e) => onInputChange(option.property, e.target.value)}
         />
       </div>
     `;
   };
 
-  const Filters = ({ strategyFilters, initialValues, handleInputChange }) => {
-    // return html`
-    //   <div class="filters-section">
-    //     ${strategyFilters.map(
-    //       (filter) =>
-    //         html`
-    //           <h4>${filter.label}</h4>
-    //           ${filter.options.map(
-    //             (option) =>
-    //               html`
-    //                 <${FilterOption}
-    //                   option=${option}
-    //                   value=${initialValues[option.property] || ""}
-    //                 />
-    //               `
-    //           )}
-    //         `
-    //     )}
-    //   </div>
-    // `;
+  const Filters = ({ filters }) => {
+    return html`
+      <div class="filters-section" style=${filterGroupStyle}>
+        <h3 style=${filterTitleStyle}>Filters</h3>
+        ${filters.map(
+          (filter, index) =>
+            html`
+              <div>
+                <h4>${filter.label}</h4>
+                ${filter.options.map(
+                  (option) =>
+                    html`
+                      <${FilterOption}
+                        option=${option}
+                        onInputChange=${(name, value) => {
+                          const updatedFilters = [...activeFilters];
+                          const filterToUpdate = updatedFilters[index];
+                          const updatedOptions = filterToUpdate.options.map(
+                            (opt) =>
+                              opt.property === name ? { ...opt, value } : opt
+                          );
+                          updatedFilters[index] = {
+                            ...filterToUpdate,
+                            options: updatedOptions,
+                          };
+                          setActiveFilters(updatedFilters);
+                        }}
+                      />
+                    `
+                )}
+                <button onClick=${() => handleEditFilter(index)}>Edit</button>
+                <button onClick=${() => handleDeleteFilter(index)}>
+                  Delete
+                </button>
+              </div>
+            `
+        )}
+        <${AddFilterButton} onClick=${handleAddFilter} />
+      </div>
+    `;
   };
 
   return html`
@@ -221,11 +220,10 @@ const Form = (props) => {
           name="strategyName"
           data-prop="label"
           value=${label || ""}
-          onInput=${onStateChange}
+          onInput=${onStrategyNameInput}
           style=${inputStyle}
         />
       </div>
-
       <div class="form-group" style=${formGroupStyle}>
         <label for="class">Class:</label>
         <select
@@ -239,18 +237,15 @@ const Form = (props) => {
           <option value="">None</option>
           ${settings.classes.map(
             (className) =>
-              html`
-                <option
-                  value="${className}"
-                  selected=${class_name === className}
-                >
-                  ${className}
-                </option>
-              `
+              html`<option
+                value="${className}"
+                selected=${class_name === className}
+              >
+                ${className}
+              </option>`
           )}
         </select>
       </div>
-
       <div class="form-group" style=${formGroupStyle}>
         <label for="universe">Universe:</label>
         <select
@@ -264,26 +259,22 @@ const Form = (props) => {
           <option value="">Select Universe</option>
           ${settings.universes.map(
             (u) =>
-              html`
-                <option value="${u}" selected=${universe === u}>${u}</option>
-              `
+              html`<option value="${u}" selected=${universe === u}>
+                ${u}
+              </option>`
           )}
         </select>
       </div>
-
-      <div class="filters-section" style=${filterGroupStyle}>
-        <h3 style=${filterTitleStyle}>Filters</h3>
-        <${Filters} strategyFilters=${filters} />
-        <${AddFilterButton} onClick=${handleAddFilter} />
-      </div>
-
+      <${Filters} filters=${activeFilters} />
       <div class="form-group" style=${formGroupStyle}>
-        <button class="generate-json-btn" style=${inputStyle}>
+        <button
+          class="generate-json-btn"
+          style=${inputStyle}
+          onClick=${handleGenerateJSON}
+        >
           Generate JSON
         </button>
       </div>
-
-      <!-- Toast Notifications -->
       <${Toast} message=${toastMessage} type=${toastType} />
     </div>
   `;
