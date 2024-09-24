@@ -285,7 +285,7 @@ const formContainerStyle = {
   padding: "20px",
   borderRadius: "8px",
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-  backgroundColor: "#fff",
+  backgroundColor: "#f9f9f9",
 };
 
 const formGroupStyle = {
@@ -309,6 +309,10 @@ const selectStyle = {
   border: "1px solid #ddd",
   borderRadius: "4px",
   fontSize: "16px",
+  transition: "border-color 0.3s",
+  ":hover": {
+    borderColor: "#888",
+  },
 };
 
 const inputStyle = {
@@ -317,6 +321,11 @@ const inputStyle = {
   border: "1px solid #ddd",
   borderRadius: "4px",
   fontSize: "16px",
+  transition: "border-color 0.3s",
+  ":focus": {
+    borderColor: "#007bff",
+    outline: "none",
+  },
 };
 
 const filterGroupStyle = {
@@ -328,6 +337,8 @@ const filterTitleStyle = {
   fontWeight: "600",
   color: "#333",
   marginBottom: "12px",
+  padding: "10px",
+  backgroundColor: "#e9ecef",
+  borderRadius: "4px",
 };
-
 export { Form };
