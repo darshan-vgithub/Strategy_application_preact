@@ -9,6 +9,25 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .parent-row {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+      }
+      .parent-row > div:first-child {
+        flex: 0 0 60%;
+        padding: 20px;
+      }
+      .parent-row > div:last-child {
+        flex: 0 0 40%;
+        padding: 20px;
+      }
+    </style>
   </head>
   <body>
     <script type="module">
@@ -16,9 +35,9 @@
         html,
         render,
         useState,
+        useEffect
       } from "https://esm.sh/htm/preact/standalone";
       import { Form } from "./form.js";
-      import { FilterForm } from "./FilterForm.js";
       import { Toast } from "./Toast.js"; // Import the Toast component
       import strategies from "./strategies.json" with { type: "json" };
 
@@ -34,6 +53,7 @@
         const [toastType, setToastType] = useState("success"); // 'success' or 'error'
 
         const handleChange = (ev) => {
+          debugger
           const val = ev.target.value;
           let prop = ev.target.dataset['prop']
           if ('label' === prop && strategies.hasOwnProperty(val)) {
@@ -46,8 +66,10 @@
             });
           } else {
             const newState = {};
-            if( prop === 'class_name')
+            if( prop === 'class_name'){
               prop = 'class'
+              newState['filters'] = []
+            }
             newState[prop] = val;
             setStrategyData({
               ...strategyData, ...newState
@@ -56,14 +78,29 @@
         };
 
         const setFilters = (newFilters)=>{
-          debugger
           setStrategyData({
             ...strategyData,
               filters: newFilters,
             });
         }
 
+        useEffect(() => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const strategy = urlParams.get('strategy');
+          if(strategy && strategies.hasOwnProperty(strategy)){
+            handleChange({
+              target: {
+                dataset: {
+                  prop: 'label'
+                },
+                value: strategy
+              }
+            })
+          }
+        }, []);
+
         return html`
+        <div class='parent-row' style='display:flex;justify-content:space-betweem'>
           <${Form}
             label=${strategyData.label}
             class_name=${strategyData.class || ""}
@@ -72,9 +109,14 @@
             onStateChange=${handleChange}
             setFilters=${setFilters}
           />
+          <div style='text-align:center;'>
+            <textarea style='width: 80%;min-height:90vh' onInput=${(ev) => setStrategyData(JSON.parse(ev.target.value))}>
+              ${JSON.stringify(strategyData, null, 2)}
+            </textarea>
+          </div>
+        </div>
         `;
       }
-
       render(html`<${App} />`, document.body);
     </script>
   </body>

@@ -86,129 +86,16 @@ const Form = (props) => {
     setFilters(newFilters);
   };
 
-  const handleGenerateJSON = () => {
-    const jsonOutput = {
-      label,
-      class_name,
-      universe,
-      filters: activeFilters.map((filter) => ({
-        label: filter.label,
-        options: filter.options.map((option) => ({
-          property: option.property,
-          value: option.value,
-        })),
-      })),
-    };
-    console.log(JSON.stringify(jsonOutput, null, 2)); // Display in console
-    // Optionally, you can display this output in the UI
+  const handleOptionValueChange = (filterIdx, property, value) => {
+    const filter = filters[filterIdx];
+    const newOptions = [...filter.options];
+    newOptions[0][property] = value;
+    const newFilters = [...filters];
+    newFilters[filterIdx].options = newOptions;
+    setFilters(newFilters);
   };
 
-  const Filters = ({ filters }) => {
-    return html`
-      <div class="filters-section" style=${filterGroupStyle}>
-        <h3 style=${filterTitleStyle}>Filters</h3>
-        <div>
-          ${filters.map(
-            (filter, index) =>
-              html`<${Filter} filter=${filter} filterIdx=${index} />`
-          )}
-        </div>
-        <div>
-          <${AddFilterButton} onClick=${handleAddFilter} />
-        </div>
-      </div>
-    `;
-  };
-
-  const Filter = ({ filter, filterIdx }) => {
-    const filterSetting = settings.filters.find(
-      (o) => o.class === filter.filter
-    );
-    const optionsValues = filter.options[0] || {}; // Ensure optionsValues is defined
-
-    const onOptionValueChange = (property, value) => {
-      debugger;
-      const newOptions = [...filter.options];
-      newOptions[0][property] = value;
-      const newFilters = [...filters];
-      newFilters[filterIdx].options = newOptions;
-      setFilters(newFilters);
-    };
-
-    return html`
-      <div style="border:solid 1px #ddd;padding: 10px">
-        <select
-          value=${filter.filter}
-          onInput=${(ev) => setFilterType(filterIdx, ev.target.value)}
-        >
-          <option value="">Select Filter</option>
-          ${settings.filters.map(
-            (filter) =>
-              html`<option value="${filter.class}">${filter.label}</option>`
-          )}
-        </select>
-        <div>
-          ${filterSetting &&
-          filterSetting.options.map((optionSetting) => {
-            const optionValue = optionsValues[optionSetting.property] || "";
-            return html`
-              <${FilterOption}
-                optionSetting=${optionSetting}
-                value=${optionValue}
-                onOptionValueChange=${onOptionValueChange}
-              />
-            `;
-          })}
-        </div>
-        <div>
-          <button onClick=${() => handleDeleteFilter(filterIdx)}>Delete</button>
-        </div>
-      </div>
-    `;
-  };
-
-  const FilterOption = ({ optionSetting, value, onOptionValueChange }) => {
-    if (optionSetting.type === "calendar") {
-      return html`
-        <div class="form-group" style="margin: 15px 0">
-          <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
-            ${optionSetting.label}:
-          </label>
-          <select
-            value=${value || ""}
-            onInput=${(e) =>
-              onOptionValueChange(optionSetting.property, e.target.value)}
-          >
-            ${settings.calendars.map(
-              (calendar) =>
-                html`
-                  <option value="${calendar.property}">
-                    ${calendar.label}
-                  </option>
-                `
-            )}
-          </select>
-        </div>
-      `;
-    }
-
-    return html`
-      <div class="form-group" style=${filterOptionStyle} style="margin: 15px 0">
-        <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
-          ${optionSetting.label}:
-        </label>
-        <input
-          type=${optionSetting.type === "number" ? "number" : "text"}
-          key=${optionSetting.property}
-          value=${value}
-          onInput=${(e) =>
-            onOptionValueChange(optionSetting.property, e.target.value)}
-        />
-      </div>
-    `;
-  };
   return html`
-    <textarea rows="10" cols="80">${JSON.stringify(props)}</textarea>
     <div class="form-container" style=${formContainerStyle}>
       <h2>Strategy Form</h2>
       <div class="form-group" style=${formGroupStyle}>
@@ -264,25 +151,131 @@ const Form = (props) => {
           )}
         </select>
       </div>
-      <${Filters} filters=${filters} />
-      <div class="form-group" style=${formGroupStyle}>
-        <button
-          class="generate-json-btn"
-          style=${inputStyle}
-          onClick=${handleGenerateJSON}
-        >
-          Generate JSON
-        </button>
-      </div>
+
+      ${class_name === "" &&
+      html`<div class="filters-section" style=${filterGroupStyle}>
+        <h3 style=${filterTitleStyle}>Filters</h3>
+        <div>
+          ${filters.map(
+            (filter, index) =>
+              html`<div key=${filter.filter + "-filterel"}>
+                <${Filter}
+                  filter=${filter}
+                  filterIdx=${index}
+                  handleDeleteFilter=${handleDeleteFilter}
+                  handleOptionValueChange=${handleOptionValueChange}
+                  setFilterType=${setFilterType}
+                />
+              </div>`
+          )}
+        </div>
+        <div>
+          <${AddFilterButton} onClick=${handleAddFilter} />
+        </div>
+      </div> `}
+
       <${Toast} message=${toastMessage} type=${toastType} />
     </div>
   `;
 };
 
+const Filter = ({
+  filter,
+  filterIdx,
+  handleDeleteFilter,
+  handleOptionValueChange,
+  setFilterType,
+}) => {
+  const filterSetting = settings.filters.find((o) => o.class === filter.filter);
+  const optionsValues = filter.options[0] || {}; // Ensure optionsValues is defined
+
+  const onOptionValueChange = (property, value) => {
+    handleOptionValueChange(filterIdx, property, value);
+  };
+
+  return html`
+    <div
+      key=${filter.filter + "-filterdiv"}
+      style="border:solid 1px #ddd;padding: 10px"
+    >
+      <select
+        value=${filter.filter}
+        onInput=${(ev) => setFilterType(filterIdx, ev.target.value)}
+      >
+        <option value="">Select Filter</option>
+        ${settings.filters.map(
+          (filter) =>
+            html`<option value="${filter.class}">${filter.label}</option>`
+        )}
+      </select>
+      <div>
+        ${filterSetting &&
+        filterSetting.options.map((optionSetting) => {
+          const optionValue = optionsValues[optionSetting.property] || "";
+          return html`
+            <${FilterOption}
+              optionSetting=${optionSetting}
+              value=${optionValue}
+              filterName=${filter.filter}
+              key=${optionSetting.property + "-filteroptionel"}
+              onOptionValueChange=${onOptionValueChange}
+            />
+          `;
+        })}
+      </div>
+      <div>
+        <button onClick=${() => handleDeleteFilter(filterIdx)}>Delete</button>
+      </div>
+    </div>
+  `;
+};
+
+const FilterOption = ({
+  optionSetting,
+  value,
+  filterName,
+  onOptionValueChange,
+}) => {
+  if (optionSetting.type === "calendar") {
+    return html`
+      <div class="form-group" style="margin: 15px 0">
+        <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
+          ${optionSetting.label}:
+        </label>
+        <select
+          value=${value || ""}
+          key=${filterName + optionSetting.property + "-filteroption"}
+          onInput=${(e) =>
+            onOptionValueChange(optionSetting.property, e.target.value)}
+        >
+          ${settings.calendars.map(
+            (calendar) =>
+              html`
+                <option value="${calendar.property}">${calendar.label}</option>
+              `
+          )}
+        </select>
+      </div>
+    `;
+  }
+
+  return html`
+    <div class="form-group" style=${filterOptionStyle} style="margin: 15px 0">
+      <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
+        ${optionSetting.label}:
+      </label>
+      <input
+        type=${optionSetting.type === "number" ? "number" : "text"}
+        key=${filterName + optionSetting.property + "-filteroption"}
+        value=${value}
+        onInput=${(e) =>
+          onOptionValueChange(optionSetting.property, e.target.value)}
+      />
+    </div>
+  `;
+};
+
 const formContainerStyle = {
-  maxWidth: "800px",
-  margin: "0 auto",
-  padding: "20px",
   borderRadius: "8px",
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
   backgroundColor: "#f9f9f9",

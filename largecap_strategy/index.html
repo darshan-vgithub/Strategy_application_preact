@@ -1,14 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="color-scheme" content="light dark" />
-		<title>Vite + Preact</title>
-	</head>
-	<body>
-		<div id="app"></div>
-		<script type="module" src="/src/index.jsx"></script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flameback || Strategy</title>
+    <link rel="icon" href="./assets/logo-favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .parent-row {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+      }
+      .parent-row > div:first-child {
+        flex: 0 0 60%;
+        padding: 20px;
+      }
+      .parent-row > div:last-child {
+        flex: 0 0 40%;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import {
+        html,
+        render,
+        useState,
+      } from "https://esm.sh/htm/preact/standalone";
+      import strategies from "./strategies.json" with { type: "json" };
+
+      function StrategyList() {
+          return html`
+          <h1>Strategies</h1>
+              <br/>
+              <div>
+                  ${Object.keys(strategies).map(o => html`
+                    <a href='/build_strategy.html?strategy=${o}'>
+                        <b>${o.toUpperCase()}</b>
+                        <br/><br/>
+                    </a>
+                  `)}
+              </div>
+          `;
+      }
+
+      render(html`<${StrategyList} strategies=${strategies} />`, document.body);
+    </script>
+  </body>
 </html>
