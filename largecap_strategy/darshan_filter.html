@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flameback || Strategy</title>
+    <link rel="icon" href="./assets/logo-favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <script type="module">
+      import {
+        html,
+        render,
+        useState,
+        useEffect
+      } from "https://esm.sh/htm/preact/standalone";
+      import { AddFilterButton } from "./AddFilterButton.js";
+      import strategies from "./strategies.json" with { type: "json" };
+      import {settings} from "./form.js" ;
+
+      const filterGroupStyle = {
+        marginBottom: "24px",
+      };
+
+      const filterTitleStyle = {
+        fontSize: "18px",
+        fontWeight: "600",
+        color: "#333",
+        marginBottom: "12px",
+      };
+
+      const filterOptionStyle = {
+        marginBottom: "12px",
+      };
+
+      const filterOptionLabelStyle = {
+        display: "block",
+        marginBottom: "6px",
+        fontWeight: "bold",
+        color: "#333",
+      };
+
+      const selectStyle = {
+        width: "100%",
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "4px",
+        fontSize: "16px",
+      };
+
+      const inputStyle = {
+        width: "100%",
+        padding: "10px",
+        border: "1px solid #ddd",
+        borderRadius: "4px",
+        fontSize: "16px",
+      };
+
+      function App() {
+        const [strategyData, setStrategyData] = useState({
+          label: "",
+          universe: "",
+          class: "",
+          filters: [],
+        });
+
+        useEffect(() => {
+            handleChange({target: {dataset: {prop: 'label'}, value: 'finance'}})
+        },[]);
+
+        const [toastMessage, setToastMessage] = useState("");
+        const [toastType, setToastType] = useState("success"); // 'success' or 'error'
+
+        const handleChange = (ev) => {
+          const val = ev.target.value;
+          let prop = ev.target.dataset['prop']
+          if ('label' === prop && strategies.hasOwnProperty(val)) {
+            const strategy = strategies[val];
+            setStrategyData({
+              label: val,
+              class: strategy.class || "",
+              filters: strategy.filters || [],
+              universe: strategy.universe || "",
+            });
+          } else {
+            const newState = {};
+            if( prop === 'class_name')
+              prop = 'class'
+            newState[prop] = val;
+            setStrategyData({
+              ...strategyData, ...newState
+            });
+          }
+        };
+
+        return html`
+          <${Filters} filters=${strategyData.filters || []} />
+        `;
+      }
+
+      const Filters = ({ filters }) => {
+        return html`
+            <div class="filters-section" style=${filterGroupStyle}>
+              <h3 style=${filterTitleStyle}>Filters</h3>
+              ${filters.map(
+                (filter, index) =>
+                  html `<${Filter} filter=${filter} idx=${index} />`
+              )}
+            </div>
+        `;
+      };
+
+      const Filter = ({ filter, idx }) => {
+        const filterSetting = settings.filters.find(o=>o.class === filter.filter);
+        const optionsValues = filter.options[0];
+        return html`
+            <div style='border:solid 1px #ddd;padding: 10px'>
+              <select value=${filter.filter}>
+                ${settings.filters.map(
+                  (filter) =>
+                    html`
+                      <option
+                        value="${filter.class}"
+                      >
+                        ${filter.label}
+                      </option>
+                    `
+                )}
+              </select>
+              ${filterSetting.options.map(
+                (optionSetting) => {
+                  const optionValue = optionsValues[optionSetting.property] || "";
+                  return html`
+                    <${FilterOption}
+                      optionSetting=${optionSetting}
+                      value=${optionValue}
+                    />
+                  `
+              })}
+
+            </div>
+          `
+      };
+
+      const FilterOption = ({ optionSetting, value }) => {
+        if (optionSetting.type === "calendar") {
+          return html`
+            <div class="form-group"  style='margin: 15px 0'>
+              <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
+                ${optionSetting.label}:
+              </label>
+              <select
+                value=${value || ""}
+              >
+                ${settings.calendars.map(
+                  (calendar) =>
+                    html`
+                      <option
+                        value="${calendar.property}"
+                      >
+                        ${calendar.label}
+                      </option>
+                    `
+                )}
+              </select>
+            </div>
+          `;
+        }
+
+        return html`
+          <div class="form-group" style=${filterOptionStyle} style='margin: 15px 0'>
+            <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
+              ${optionSetting.label}:
+            </label>
+            <input
+              type=${optionSetting.type === "number" ? "number" : "text"}
+              value=${value}
+              onInput=${(e) => onInputChange(optionSetting.property, e.target.value)}
+            />
+          </div>
+        `;
+      };
+
+      render(html`<${App} />`, document.body);
+    </script>
+  </body>
+</html>

@@ -3,7 +3,7 @@ import { showToast } from "./Toast.js";
 import { AddFilterButton } from "./AddFilterButton.js";
 import { Toast } from "./Toast.js";
 
-const settings = {
+export const settings = {
   classes: ["CruiseMomentum"],
   universes: [
     "Mcap_500",
@@ -22,7 +22,10 @@ const settings = {
     "Energy_Sector",
     "Automotive_Sector",
   ],
-  calendars: ["XNSE", "BCME"],
+  calendars: [
+    { label: "NSE Calendar", property: "Calendar" },
+    { label: "CME Calendar", property: "Calendar_CME" },
+  ],
   filters: [
     {
       label: "Market Cap Filter",
@@ -57,31 +60,13 @@ const settings = {
 };
 
 const Form = (props) => {
-  const { label, class_name, universe, onStateChange } = props;
+  const { label, class_name, universe, filters, onStateChange, setFilters } =
+    props;
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
-  const [activeFilters, setActiveFilters] = useState([]);
-
-  const onStrategyNameInput = (e) => {
-    const name = e.target.value;
-    onStateChange(e);
-    if (name) {
-      setActiveFilters(
-        settings.filters.map((filter) => ({
-          ...filter,
-          options: filter.options.map((option) => ({ ...option, value: "" })), // Initialize with empty values
-        }))
-      );
-    } else {
-      setActiveFilters([]);
-    }
-  };
 
   const handleAddFilter = () => {
-    setActiveFilters((prevFilters) => [
-      ...prevFilters,
-      { label: "New Filter", options: [] }, // Add a new empty filter
-    ]);
+    setFilters([...filters, { filter: "", options: [{}] }]);
     setToastMessage("Added filter successfully!");
     setToastType("success");
     setTimeout(() => setToastMessage(""), 3000);
@@ -93,10 +78,17 @@ const Form = (props) => {
   };
 
   const handleDeleteFilter = (index) => {
-    setActiveFilters(activeFilters.filter((_, i) => i !== index));
+    setFilters(filters.filter((_, i) => i !== index));
     setToastMessage("Deleted filter successfully!");
     setToastType("success");
     setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  const setFilterType = (index, type) => {
+    const newFilters = [...filters];
+    newFilters[index].filter = type;
+    newFilters[index].options = [{}];
+    setFilters(newFilters);
   };
 
   const handleGenerateJSON = () => {
@@ -116,30 +108,70 @@ const Form = (props) => {
     // Optionally, you can display this output in the UI
   };
 
-  const FilterOption = ({ option, onInputChange }) => {
-    if (option.type === "calendar") {
+  const Filters = ({ filters }) => {
+    return html`
+      <div class="filters-section" style=${filterGroupStyle}>
+        <h3 style=${filterTitleStyle}>Filters</h3>
+        <div>
+          ${filters.map(
+            (filter, index) => html`<${Filter} filter=${filter} idx=${index} />`
+          )}
+        </div>
+        <div>
+          <${AddFilterButton} onClick=${handleAddFilter} />
+        </div>
+      </div>
+    `;
+  };
+
+  const Filter = ({ filter, idx }) => {
+    const filterSetting = settings.filters.find(
+      (o) => o.class === filter.filter
+    );
+    const optionsValues = filter.options[0];
+    return html`
+      <div style="border:solid 1px #ddd;padding: 10px">
+        <select
+          value=${filter.filter}
+          onInput=${(e) => setFilterType(idx, e.target.value)}
+        >
+          ${settings.filters.map(
+            (filter) =>
+              html` <option value="${filter.class}">${filter.label}</option> `
+          )}
+        </select>
+        <div>
+          ${filterSetting &&
+          filterSetting.options.map((optionSetting, idx_filteroption) => {
+            const optionValue = optionsValues[optionSetting.property] || "";
+            return html`
+              <${FilterOption}
+                optionSetting=${optionSetting}
+                value=${optionValue}
+              />
+            `;
+          })}
+        </div>
+        <div>
+          <button onClick=${() => handleDeleteFilter(idx)}>Delete</button>
+        </div>
+      </div>
+    `;
+  };
+
+  const FilterOption = ({ optionSetting, value }) => {
+    if (optionSetting.type === "calendar") {
       return html`
-        <div class="form-group" style=${filterOptionStyle}>
-          <label for=${option.property} style=${filterOptionLabelStyle}>
-            ${option.label}:
+        <div class="form-group" style="margin: 15px 0">
+          <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
+            ${optionSetting.label}:
           </label>
-          <select
-            id=${option.property}
-            name=${option.property}
-            class="form-select"
-            style=${selectStyle}
-            value=${option.value || ""}
-            onInput=${(e) => onInputChange(option.property, e.target.value)}
-          >
-            <option value="">Select Calendar</option>
+          <select value=${value || ""}>
             ${settings.calendars.map(
               (calendar) =>
                 html`
-                  <option
-                    value="${calendar}"
-                    selected=${option.value === calendar}
-                  >
-                    ${calendar}
+                  <option value="${calendar.property}">
+                    ${calendar.label}
                   </option>
                 `
             )}
@@ -149,65 +181,19 @@ const Form = (props) => {
     }
 
     return html`
-      <div class="form-group" style=${filterOptionStyle}>
-        <label for=${option.property} style=${filterOptionLabelStyle}>
-          ${option.label}:
+      <div class="form-group" style=${filterOptionStyle} style="margin: 15px 0">
+        <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
+          ${optionSetting.label}:
         </label>
         <input
-          type=${option.type === "number" ? "number" : "text"}
-          id=${option.property}
-          name=${option.property}
-          class="form-input"
-          style=${inputStyle}
-          value=${option.value || ""}
-          onInput=${(e) => onInputChange(option.property, e.target.value)}
+          type=${optionSetting.type === "number" ? "number" : "text"}
+          value=${value}
+          onInput=${(e) =>
+            onInputChange(optionSetting.property, e.target.value)}
         />
       </div>
     `;
   };
-
-  const Filters = ({ filters }) => {
-    return html`
-      <div class="filters-section" style=${filterGroupStyle}>
-        <h3 style=${filterTitleStyle}>Filters</h3>
-        ${filters.map(
-          (filter, index) =>
-            html`
-              <div>
-                <h4>${filter.label}</h4>
-                ${filter.options.map(
-                  (option) =>
-                    html`
-                      <${FilterOption}
-                        option=${option}
-                        onInputChange=${(name, value) => {
-                          const updatedFilters = [...activeFilters];
-                          const filterToUpdate = updatedFilters[index];
-                          const updatedOptions = filterToUpdate.options.map(
-                            (opt) =>
-                              opt.property === name ? { ...opt, value } : opt
-                          );
-                          updatedFilters[index] = {
-                            ...filterToUpdate,
-                            options: updatedOptions,
-                          };
-                          setActiveFilters(updatedFilters);
-                        }}
-                      />
-                    `
-                )}
-                <button onClick=${() => handleEditFilter(index)}>Edit</button>
-                <button onClick=${() => handleDeleteFilter(index)}>
-                  Delete
-                </button>
-              </div>
-            `
-        )}
-        <${AddFilterButton} onClick=${handleAddFilter} />
-      </div>
-    `;
-  };
-
   return html`
     <textarea rows="10" cols="80">${JSON.stringify(props)}</textarea>
     <div class="form-container" style=${formContainerStyle}>
@@ -219,8 +205,8 @@ const Form = (props) => {
           id="strategyName"
           name="strategyName"
           data-prop="label"
+          onInput=${onStateChange}
           value=${label || ""}
-          onInput=${onStrategyNameInput}
           style=${inputStyle}
         />
       </div>
@@ -265,7 +251,7 @@ const Form = (props) => {
           )}
         </select>
       </div>
-      <${Filters} filters=${activeFilters} />
+      <${Filters} filters=${filters} />
       <div class="form-group" style=${formGroupStyle}>
         <button
           class="generate-json-btn"

@@ -55,6 +55,12 @@
           }
         };
 
+        const setFilters = (newFilters)=>{
+          setStrategyData({
+              filters: newFilters,
+            });
+        }
+
         return html`
           <${Form}
             label=${strategyData.label}
@@ -62,6 +68,7 @@
             universe=${strategyData.universe || ""}
             filters=${strategyData.filters || []}
             onStateChange=${handleChange}
+            setFilters=${setFilters}
           />
         `;
       }
