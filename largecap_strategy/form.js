@@ -72,11 +72,6 @@ const Form = (props) => {
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  const handleEditFilter = (index) => {
-    console.log("Edit filter at index:", index);
-    // Implement editing logic if necessary
-  };
-
   const handleDeleteFilter = (index) => {
     setFilters(filters.filter((_, i) => i !== index));
     setToastMessage("Deleted filter successfully!");
@@ -114,7 +109,8 @@ const Form = (props) => {
         <h3 style=${filterTitleStyle}>Filters</h3>
         <div>
           ${filters.map(
-            (filter, index) => html`<${Filter} filter=${filter} idx=${index} />`
+            (filter, index) =>
+              html`<${Filter} filter=${filter} filterIdx=${index} />`
           )}
         </div>
         <div>
@@ -124,49 +120,65 @@ const Form = (props) => {
     `;
   };
 
-  const Filter = ({ filter, idx }) => {
+  const Filter = ({ filter, filterIdx }) => {
     const filterSetting = settings.filters.find(
       (o) => o.class === filter.filter
     );
-    const optionsValues = filter.options[0];
+    const optionsValues = filter.options[0] || {}; // Ensure optionsValues is defined
+
+    const onOptionValueChange = (property, value) => {
+      debugger;
+      const newOptions = [...filter.options];
+      newOptions[0][property] = value;
+      const newFilters = [...filters];
+      newFilters[filterIdx].options = newOptions;
+      setFilters(newFilters);
+    };
+
     return html`
       <div style="border:solid 1px #ddd;padding: 10px">
         <select
           value=${filter.filter}
-          onInput=${(e) => setFilterType(idx, e.target.value)}
+          onInput=${(ev) => setFilterType(filterIdx, ev.target.value)}
         >
+          <option value="">Select Filter</option>
           ${settings.filters.map(
             (filter) =>
-              html` <option value="${filter.class}">${filter.label}</option> `
+              html`<option value="${filter.class}">${filter.label}</option>`
           )}
         </select>
         <div>
           ${filterSetting &&
-          filterSetting.options.map((optionSetting, idx_filteroption) => {
+          filterSetting.options.map((optionSetting) => {
             const optionValue = optionsValues[optionSetting.property] || "";
             return html`
               <${FilterOption}
                 optionSetting=${optionSetting}
                 value=${optionValue}
+                onOptionValueChange=${onOptionValueChange}
               />
             `;
           })}
         </div>
         <div>
-          <button onClick=${() => handleDeleteFilter(idx)}>Delete</button>
+          <button onClick=${() => handleDeleteFilter(filterIdx)}>Delete</button>
         </div>
       </div>
     `;
   };
 
-  const FilterOption = ({ optionSetting, value }) => {
+  const FilterOption = ({ optionSetting, value, onOptionValueChange }) => {
     if (optionSetting.type === "calendar") {
       return html`
         <div class="form-group" style="margin: 15px 0">
           <label for=${optionSetting.property} style=${filterOptionLabelStyle}>
             ${optionSetting.label}:
           </label>
-          <select value=${value || ""}>
+          <select
+            value=${value || ""}
+            onInput=${(e) =>
+              onOptionValueChange(optionSetting.property, e.target.value)}
+          >
             ${settings.calendars.map(
               (calendar) =>
                 html`
@@ -187,9 +199,10 @@ const Form = (props) => {
         </label>
         <input
           type=${optionSetting.type === "number" ? "number" : "text"}
+          key=${optionSetting.property}
           value=${value}
           onInput=${(e) =>
-            onInputChange(optionSetting.property, e.target.value)}
+            onOptionValueChange(optionSetting.property, e.target.value)}
         />
       </div>
     `;
