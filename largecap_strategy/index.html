@@ -9,23 +9,48 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-
     <style>
-      * {
-        box-sizing: border-box;
-      }
-      .parent-row {
-        display: flex;
-        align-items: start;
-        justify-content: space-between;
-      }
-      .parent-row > div:first-child {
-        flex: 0 0 60%;
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
         padding: 20px;
       }
-      .parent-row > div:last-child {
-        flex: 0 0 40%;
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+      }
+
+      .strategy-list {
+        max-width: 600px;
+        margin: 0 auto;
         padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      ol {
+        list-style-type: decimal; /* Use decimal numbers */
+        padding-left: 20px;
+      }
+
+      li {
+        margin: 10px 0;
+        font-size: 1.1em;
+      }
+
+      a {
+        text-decoration: none;
+        color: #3498db; /* Link color */
+        transition: color 0.3s;
+      }
+
+      a:hover {
+        color: #2980b9; /* Darker link color on hover */
       }
     </style>
   </head>
@@ -40,16 +65,18 @@
 
       function StrategyList() {
           return html`
-          <h1>Strategies</h1>
-              <br/>
-              <div>
-                  ${Object.keys(strategies).map(o => html`
-                    <a href='/build_strategy.html?strategy=${o}'>
-                        <b>${o.toUpperCase()}</b>
-                        <br/><br/>
-                    </a>
-                  `)}
-              </div>
+          <div class="strategy-list">
+            <h1>Strategies</h1>
+            <ol>
+              ${Object.keys(strategies).map(o => html`
+                <li>
+                  <a href='/build_strategy.html?strategy=${o}'>
+                    ${o}
+                  </a>
+                </li>
+              `)}
+            </ol>
+          </div>
           `;
       }
 
